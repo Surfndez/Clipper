@@ -2,21 +2,26 @@ import argparse
 import atexit
 import os
 import readline
-import configparser
-
+import subprocess
 from pyclipper.config import Config
+from server import start_server
 
 history_path = os.path.expanduser("~/.pyhistory")
 
+
+def start_rabbitmq():
+    start_rabbitmq_cmd = "docker run --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management".split()
+    subprocess.run(start_rabbitmq_cmd)
+
+
 def main(args):
-    c = Config()
-    pass
+    start_server()
+    # start_rabbitmq()
+
     # link = ytdl.download_and_trim(
     #     video_identifier="https://twitter.com/i/status/1246637822959693825", start="2s", end="5s",
     # )
     # print(link)
-
-
 
 
 def save_history():
@@ -38,4 +43,3 @@ if __name__ == "__main__":
         readline.read_history_file(history_path)
 
     atexit.register(save_history)
-    # del os, atexit, readline, rlcompleter, save_history, history_path

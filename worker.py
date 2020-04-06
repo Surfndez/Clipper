@@ -1,9 +1,8 @@
 import json
-
 import pika
 import requests
-
 from pyclipper.config import Config
+from pyclipper.ytdl import download_and_trim
 
 c = Config()
 
@@ -15,12 +14,16 @@ print(" [*] Waiting for messages. To exit press CTRL+C")
 
 
 def callback(ch, method, properties, body):
-    print(" [x] Received %r" % body)
     d = json.loads(body)
 
-    uploaded_clip_url = ""
-    r = requests.post(
-        f"http://localhost:{c.flask_port}/{c.video_clip_complete_path}", json={"youtube": uploaded_clip_url}
+    clip_url = download_and_trim(
+        d.get("video_url"),
+        d.get("start"),
+        d.get("end"),
+    )
+
+    requests.post(
+        f"http://localhost:{c.flask_port}/{c.video_clip_complete_path}", json={"clip_url": clip_url, **d}
     )
     print(" [x] Done")
     ch.basic_ack(delivery_tag=method.delivery_tag)

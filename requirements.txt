@@ -2,5 +2,5 @@ moviepy
 youtube-dl
 durations
 flask
-httplib
 httplib2
+pika
