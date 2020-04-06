@@ -1,0 +1,32 @@
+import json
+
+import pika
+import requests
+
+from pyclipper.config import Config
+
+c = Config()
+
+connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
+channel = connection.channel()
+
+channel.queue_declare(queue="task_queue", durable=True)
+print(" [*] Waiting for messages. To exit press CTRL+C")
+
+
+def callback(ch, method, properties, body):
+    print(" [x] Received %r" % body)
+    d = json.loads(body)
+
+    uploaded_clip_url = ""
+    r = requests.post(
+        f"http://localhost:{c.flask_port}/{c.video_clip_complete_path}", json={"youtube": uploaded_clip_url}
+    )
+    print(" [x] Done")
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
+
+channel.basic_qos(prefetch_count=1)
+channel.basic_consume(queue="task_queue", on_message_callback=callback)
+
+channel.start_consuming()

@@ -1,0 +1,6 @@
+pyclipper/pyclipper.ini
+pyclipper/assets
+
+env/
+.idea/
+.DS_Store

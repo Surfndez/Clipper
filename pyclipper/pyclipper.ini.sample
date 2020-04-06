@@ -1,0 +1,15 @@
+[server]
+base_url =
+flask_port = 5000
+video_clip_complete_path = protectme
+
+[twilio]
+account_sid =
+auth_token =
+phone_number =
+my_phone_number =
+demo_url = https://www.youtube.com/watch?v=LYB00pdOnEc
+demo_start = 2:32
+demo_end = 5:14
+demo_text = %(demo_url)s %(demo_start)s %(demo_end)s
+
