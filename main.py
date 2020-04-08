@@ -19,23 +19,6 @@ def start_rabbitmq():
     subprocess.run(start_rabbitmq_cmd)
 
 
-def read_image():
-    from google.cloud import vision
-
-    two_timestamp = 'https://i.imgur.com/uBfVFoh.jpg'
-    image_uri = two_timestamp
-
-    client = vision.ImageAnnotatorClient()
-    image = vision.types.Image()
-    image.source.image_uri = image_uri
-    response = client.text_detection(image=image)
-    for text in response.text_annotations:
-        print('=' * 79)
-        print(f'"{text.description}"')
-        vertices = [f'({v.x},{v.y})' for v in text.bounding_poly.vertices]
-        print(f'bounds: {",".join(vertices)}')
-
-
 # Returns start time in seconds, end time in seconds and video url
 def parse_youtube_screenshot_text(text):
     from fuzzywuzzy import process
