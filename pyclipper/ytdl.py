@@ -1,13 +1,12 @@
 import os
 from urllib.parse import quote
+
 import ffmpeg
 import youtube_dl
-from durations import Duration
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 from requests.compat import urljoin
 
 from pyclipper.config import Config
-from pyclipper.timestamp import VideoTimestamp
 
 c = Config()
 

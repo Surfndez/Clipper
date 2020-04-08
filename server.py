@@ -29,9 +29,9 @@ def stest():
 
 @app.route("/")
 def index():
-    queue_message({
-        "video_identifier": "https://www.youtube.com/watch?v=LYB00pdOnEc", "start": "4:44", "end": "5:14", "phone": "+16189808247"
-    })
+    # queue_message({
+    #     "video_identifier": "https://www.youtube.com/watch?v=LYB00pdOnEc", "start": "4:44", "end": "5:14", "phone": "+16189808247"
+    # })
     return f"""
         <p>Clipper</p>
         <p>Send Us a text with :</p>
@@ -48,6 +48,7 @@ def index():
 
 @app.route("/clips/<clip>")
 def clip_download(clip):
+    # TODO: open graph protocol https://ogp.me/
     return send_file(f"pyclipper/assets/clips/{unquote(clip)}", as_attachment=True)
 
 
@@ -70,7 +71,7 @@ def on_text_received():
     text_message = request.values.get("Body", None)
     from_number = request.values.get("From", None)
 
-    number_session = session[from_number]
+    number_session = session.get(from_number, {})
     # if number_session.get('processing', False):
     #     resp = MessagingResponse()
     #     resp.message("""
