@@ -4,6 +4,7 @@ import os
 import re
 import readline
 import subprocess
+from functools import cmp_to_key
 
 import numpy as np
 import pytesseract
@@ -131,9 +132,33 @@ def top_half_image(image, out=None):
     return out
 
 
+def _main():
+    ww = "ww.png"
+    one = "1.jpg"
+    two = "2.jpg"
+    tjbox = "tj_box.jpeg"
+    tjnobox = "tj_no_box.jpeg"
+    infile = ww
+    print(f"evalutating: {infile}")
+    out = black_white_image(infile)
+    out = top_half_image(out)
+    text = pytesseract.image_to_string(Image.open(tjbox))
+    # if os.path.exists(out):
+    #     os.remove(out)
+    parsed = parse_youtube_screenshot_text(text)
+    print(parsed)
+    # start_server()
+    # start_rabbitmq()
+
+    # link = ytdl.download_and_trim(
+    #     video_identifier="https://twitter.com/i/status/1246637822959693825", start="2s", end="5s",
+    # )
+    # print(link)
+
+
 # https://stackoverflow.com/questions/10262600/how-to-detect-region-of-large-of-white-pixels-using-opencv
-def business_card():
-    infile = "bw2.jpg"
+def functional_third_timestamp():
+    infile = "ww.png"
     orig = cv2.imread(infile)
 
     # ww = black_white_image(ww)
@@ -166,8 +191,8 @@ def business_card():
     text = pytesseract.image_to_string(Image.open(bt))
     print(text)
 
-    titles = ['BLACK ', 'MASK', 'FINAL','mask2',  'gray3', 'gray4']
-    images = [orig_flipped, mask, gray2,mask2,  gray3, gray4]
+    titles = ['BLACK ', 'MASK', 'FINAL', 'mask2', 'gray3', 'gray4']
+    images = [orig_flipped, mask, gray2, mask2, gray3, gray4]
     size = min(len(titles), len(images))
     for i in xrange(size):
         plt.subplot(1, size, i + 1), plt.imshow(images[i], 'gray')
@@ -176,32 +201,112 @@ def business_card():
     plt.show()
 
 
-def _main():
-    ww = "ww.png"
-    one = "1.jpg"
-    two = "2.jpg"
-    tjbox = "tj_box.jpeg"
-    tjnobox = "tj_no_box.jpeg"
-    infile = ww
-    print(f"evalutating: {infile}")
-    out = black_white_image(infile)
-    out = top_half_image(out)
-    text = pytesseract.image_to_string(Image.open(tjbox))
-    # if os.path.exists(out):
-    #     os.remove(out)
-    parsed = parse_youtube_screenshot_text(text)
-    print(parsed)
-    # start_server()
-    # start_rabbitmq()
+def play_with_third():
+    threshold = 248
+    ww = 'ww.png'
+    two = '2.jpg'
+    infile = two
+    img = cv2.imread(infile, 0)
 
-    # link = ytdl.download_and_trim(
-    #     video_identifier="https://twitter.com/i/status/1246637822959693825", start="2s", end="5s",
-    # )
-    # print(link)
+    bw = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)[1]
+    bwinv_orig = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY_INV)[1]
+    bwinv = bwinv_orig.copy()
+
+    contours, _ = cv2.findContours(bwinv_orig, 1, 2)
+    bwcont, _ = cv2.findContours(bw, 1, 2)
+    mask = np.ones(img.shape, np.uint8)
+    mask2 = np.zeros(img.shape, np.uint8)
+
+    def get_area(c1, c2):
+        return cv2.contourArea(c2) - cv2.contourArea(c1)
+
+    big_boxes = sorted(contours, key = cmp_to_key(get_area))[1:5]
+    bigbw = sorted(bwcont, key = cmp_to_key(get_area))[0:5]
+
+    for i, c in enumerate(bigbw):
+        x, y, w, h = cv2.boundingRect(c)
+        cv2.rectangle(mask2, (x, y), (x + w, y + h), 255, 3)
+
+
+
+    for i, c in enumerate(big_boxes):
+
+        area = cv2.contourArea(c)
+        if 5000 < area < 18000:
+            x, y, w, h = cv2.boundingRect(c)
+            cv2.rectangle(mask, (x, y), (x + w, y + h), 0, -1)
+
+    cv2.bitwise_not(mask2, mask2)
+    cv2.bitwise_and(mask2, bw, bw)
+    cv2.bitwise_and(mask, bw, bw)
+    kernel = np.ones((3, 3), np.uint8)
+    bw = cv2.dilate(bw, kernel, iterations=1)
+    bwcont, _ = cv2.findContours(bw, 1, 2)
+    bigbw = sorted(bwcont, key = cmp_to_key(get_area))[0:3]
+    mask = np.ones(img.shape, np.uint8)
+    for i, c in enumerate(bigbw):
+        x, y, w, h = cv2.boundingRect(c)
+        cv2.rectangle(mask, (x, y), (x + w, y + h), 0, -1)
+    cv2.bitwise_and(bw, mask, bw)
+    cv2.bitwise_not(bw, bw)
+    bw = cv2.GaussianBlur(bw, (5, 5), 0)
+
+    cv2.imwrite("didit.png", bw)
+
+    t = pytesseract.image_to_string("didit.png", config="tessedit_char_whitelist=0123456789:")
+    pp(t)
+
+
+    show_plot([
+        (bw, 'bw'),
+        (mask2, 'mask2'),
+        (bwinv, 'bwinv'),
+        (mask, 'mask'),
+    ]
+    )
+
+    # # ww = black_white_image(ww)
+    # orig_flipped = cv2.threshold(orig, 240, 255, cv2.THRESH_BINARY_INV)[1]
+    #
+    # gray = cv2.cvtColor(orig_flipped, cv2.COLOR_BGR2GRAY)
+    # gray = cv2.threshold(gray, 127, 255, 0)[1]
+    # gray2 = gray.copy()
+    # gray3 = gray.copy()
+    # gray4 = gray.copy()
+    #
+    # mask = np.zeros(gray.shape, np.uint8)
+    # mask2 = np.zeros(gray.shape, np.uint8)
+    #
+    # contours, hier = cv2.findContours(gray, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    # for cnt in contours:
+    #     if 2000 < cv2.contourArea(cnt) < 50000:
+    #         cv2.drawContours(mask2, [cnt], 0, 255, 1)
+    #         cv2.drawContours(mask, [cnt], 0, 255, -1)
+    #
+    # cv2.bitwise_not(gray2, gray2, mask)
+    # cv2.bitwise_xor(gray2, mask, gray3)
+    # cv2.bitwise_and(gray3, mask, gray3)
+    # cv2.bitwise_xor(gray3, mask2, gray4)
+    #
+    # gray4 = cv2.threshold(gray4, 240, 255, cv2.THRESH_BINARY_INV)[1]
+    # bt = "butttits.png"
+    # cv2.imwrite(bt, gray4)
+    #
+    # text = pytesseract.image_to_string(Image.open(bt))
+    # print(text)
+    #
+    # titles = ['BLACK ', 'MASK', 'FINAL', 'mask2', 'gray3', 'gray4']
+    # images = [orig_flipped, mask, gray2, mask2, gray3, gray4]
+    # size = min(len(titles), len(images))
+    # for i in xrange(size):
+    #     plt.subplot(1, size, i + 1), plt.imshow(images[i], 'gray')
+    #     plt.title(titles[i])
+    #     plt.xticks([]), plt.yticks([])
+    # plt.show()
 
 
 def bullshit():
-    business_card()
+    play_with_third()
 
 
 def main(args):
@@ -220,6 +325,14 @@ def enable_history():
         readline.read_history_file(history_path)
 
 
+def show_plot(images):
+    for i, (image, title) in enumerate(images):
+        plt.subplot(1, len(images), i + 1), plt.imshow(image, 'gray')
+        plt.title(title)
+        plt.xticks([]), plt.yticks([])
+    plt.show()
+
+
 def demo_threshold(infile):
     img = cv2.imread(infile, 0)
     ret, thresh1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
@@ -229,6 +342,7 @@ def demo_threshold(infile):
     ret, thresh5 = cv2.threshold(img, 127, 255, cv2.THRESH_TOZERO_INV)
     titles = ['Original Image', 'BINARY', 'BINARY_INV', 'TRUNC', 'TOZERO', 'TOZERO_INV']
     images = [img, thresh1, thresh2, thresh3, thresh4, thresh5]
+
     for i in xrange(6):
         plt.subplot(2, 3, i + 1), plt.imshow(images[i], 'gray')
         plt.title(titles[i])
