@@ -51,7 +51,6 @@ def parse_youtube_screenshot_text(text):
 
     pp(lines)
 
-
     match, percent = process.extractOne(double_tap_text, lines)
     two_timestamps_attempt = percent > 95
 
@@ -69,7 +68,7 @@ def parse_youtube_screenshot_text(text):
     window_size = 3 if two_timestamps_attempt else 2
     print(window_size)
     for i in range(len(keys) - window_size + 1):
-        window = keys[i:i+window_size]
+        window = keys[i:i + window_size]
         print(window)
         if consecutive(window):
             for k in window:
@@ -78,9 +77,6 @@ def parse_youtube_screenshot_text(text):
     relevant_timestamps_indices = {key: all_ts_indices[key] for key in save_keys}
 
     print("timestamps: ", relevant_timestamps_indices)
-
-
-
 
     #
     # last = max(ts_indices.keys())
@@ -98,6 +94,7 @@ def black_white_image(image, out=None):
     def show(img):
         plt.imshow(img, cmap="gray")
         plt.show()
+
     threshold_value = 235
     if out is None:
         out = f"bw{image}"
@@ -108,12 +105,10 @@ def black_white_image(image, out=None):
     ret, thresh2 = cv2.threshold(img, threshold_value, 255, cv2.THRESH_BINARY_INV)
     show(thresh2)
 
-    kernel = np.ones((3, 3), np.uint8)
-    img = cv2.erode(thresh2, kernel, iterations=1)
+    # kernel = np.ones((3, 3), np.uint8)
+    # img = cv2.erode(thresh2, kernel, iterations=1)
     # show(img)
 
-
-    #
     cv2.imwrite(out, thresh2)
     return out
 
@@ -135,27 +130,51 @@ def top_half_image(image, out=None):
     cv2.imwrite(out, cropped_img)
     return out
 
+
 # https://stackoverflow.com/questions/10262600/how-to-detect-region-of-large-of-white-pixels-using-opencv
 def business_card():
-    ww = "ww.png"
-    img = cv2.imread(ww)
-    img = cv2.resize(img,(400,500))
-    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    ret,gray = cv2.threshold(gray,127,255,0)
-    gray2 = gray.copy()
-    mask = np.zeros(gray.shape,np.uint8)
+    infile = "bw2.jpg"
+    orig = cv2.imread(infile)
 
-    contours, hier = cv2.findContours(gray,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+    # ww = black_white_image(ww)
+    orig_flipped = cv2.threshold(orig, 240, 255, cv2.THRESH_BINARY_INV)[1]
+
+    gray = cv2.cvtColor(orig_flipped, cv2.COLOR_BGR2GRAY)
+    gray = cv2.threshold(gray, 127, 255, 0)[1]
+    gray2 = gray.copy()
+    gray3 = gray.copy()
+    gray4 = gray.copy()
+
+    mask = np.zeros(gray.shape, np.uint8)
+    mask2 = np.zeros(gray.shape, np.uint8)
+
+    contours, hier = cv2.findContours(gray, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
-        if 200<cv2.contourArea(cnt)<5000:
-            cv2.drawContours(img,[cnt],0,(0,255,0),2)
-            cv2.drawContours(mask,[cnt],0,255,-1)
+        if 2000 < cv2.contourArea(cnt) < 50000:
+            cv2.drawContours(mask2, [cnt], 0, 255, 1)
+            cv2.drawContours(mask, [cnt], 0, 255, -1)
 
     cv2.bitwise_not(gray2, gray2, mask)
+    cv2.bitwise_xor(gray2, mask, gray3)
+    cv2.bitwise_and(gray3, mask, gray3)
+    cv2.bitwise_xor(gray3, mask2, gray4)
 
-    cv2.imshow('IMG', gray2)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    gray4 = cv2.threshold(gray4, 240, 255, cv2.THRESH_BINARY_INV)[1]
+    bt = "butttits.png"
+    cv2.imwrite(bt, gray4)
+
+    text = pytesseract.image_to_string(Image.open(bt))
+    print(text)
+
+    titles = ['BLACK ', 'MASK', 'FINAL','mask2',  'gray3', 'gray4']
+    images = [orig_flipped, mask, gray2,mask2,  gray3, gray4]
+    size = min(len(titles), len(images))
+    for i in xrange(size):
+        plt.subplot(1, size, i + 1), plt.imshow(images[i], 'gray')
+        plt.title(titles[i])
+        plt.xticks([]), plt.yticks([])
+    plt.show()
+
 
 def _main():
     ww = "ww.png"
@@ -182,12 +201,12 @@ def _main():
 
 
 def bullshit():
-
+    business_card()
 
 
 def main(args):
-    _main()
-    # bullshit()
+    # _main()
+    bullshit()
 
 
 def save_history():
