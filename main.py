@@ -205,7 +205,7 @@ def play_with_third():
     threshold = 248
     ww = 'ww.png'
     two = '2.jpg'
-    infile = two
+    infile = ww
     img = cv2.imread(infile, 0)
 
     bw = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)[1]
