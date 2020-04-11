@@ -1,5 +1,6 @@
 import re
 
+from pyclipper.screenshot_metadata import ScreenshotMetadata
 from pyclipper.timestamp import VideoTimestamp
 
 
@@ -21,9 +22,5 @@ class ClipperTextMessageParser:
         self._end = VideoTimestamp(tokens[2]).seconds
 
     @property
-    def data(self):
-        return {
-            "video_url": self._video_url,
-            "start": self._start,
-            "end": self._end
-        }
+    def data(self) -> ScreenshotMetadata:
+        return ScreenshotMetadata(self._video_url, self.start, self.end)

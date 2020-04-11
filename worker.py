@@ -17,13 +17,12 @@ def callback(ch, method, properties, body):
     d = json.loads(body)
 
     clip_url = download_and_trim(
-        d.get("video_url"),
-        d.get("start"),
-        d.get("end"),
+        d.get("url"), d.get("start_seconds"), d.get("end_seconds"),
     )
 
     requests.post(
-        f"http://localhost:{c.flask_port}/{c.video_clip_complete_path}", json={"clip_url": clip_url, **d}
+        f"http://localhost:{c.flask_port}/{c.video_clip_complete_path}",
+        json={"clip_url": clip_url, **d},
     )
     print(" [x] Done")
     ch.basic_ack(delivery_tag=method.delivery_tag)
