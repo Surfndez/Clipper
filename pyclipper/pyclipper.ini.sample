@@ -12,4 +12,3 @@ demo_url = https://www.youtube.com/watch?v=LYB00pdOnEc
 demo_start = 2:32
 demo_end = 5:14
 demo_text = %(demo_url)s %(demo_start)s %(demo_end)s
-
