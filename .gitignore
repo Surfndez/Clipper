@@ -1,6 +1,7 @@
 pyclipper/pyclipper.ini
 pyclipper/assets
 
+.env/
 env/
 .idea/
 .DS_Store
