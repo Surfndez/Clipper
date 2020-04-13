@@ -29,19 +29,18 @@ def download_and_trim(video_identifier, start, end=None):
     clips_path = f"{videos}/clips"
     extension = ".mp4"
 
-    template = "pyclipper/assets/full/%(title)s-%(id)s.%(ext)s"
+    template = "pyclipper/assets/full/%(id)s.%(ext)s"
 
-    ydl_opts = {"outtmpl": template,
-                "format": "mp4"
-                }
+    ydl_opts = {"outtmpl": template, "format": "mp4"}
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(video_identifier, download=False)
-        title = info['title']
-        video_id = info['id']
-        ext = info['ext']
-        video = f"{full_video_path}/{title}-{video_id}.{ext}"
-        clip_name = f"{title}-{video_id}-s{start}-e{end}{extension}"
+        title = info["title"]
+        video_id = info["id"]
+        ext = info["ext"]
+
+        video = f"{full_video_path}/{video_id}.{ext}"
+        clip_name = f"{title}-s{start}-e{end}{extension}"
         target = os.path.join(clips_path, "buggy" + clip_name)
         clip_path = os.path.join(clips_path, clip_name)
 
@@ -61,6 +60,3 @@ def download_and_trim(video_identifier, start, end=None):
         os.remove(target)
 
     return urljoin(c.base_url, f"clips/{quote(clip_name)}")
-
-
-

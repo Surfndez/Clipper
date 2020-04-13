@@ -24,11 +24,11 @@ def callback(ch, method, properties, body):
         f"http://localhost:{c.flask_port}/{c.video_clip_complete_path}",
         json={"clip_url": clip_url, **d},
     )
-    print(" [x] Done")
     ch.basic_ack(delivery_tag=method.delivery_tag)
+    print(" [x] Done")
 
 
-channel.basic_qos(prefetch_count=1)
+channel.basic_qos(prefetch_count=0)
 channel.basic_consume(queue="task_queue", on_message_callback=callback)
 
 channel.start_consuming()

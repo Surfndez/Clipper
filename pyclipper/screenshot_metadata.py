@@ -12,3 +12,10 @@ class ScreenshotMetadata:
     start_seconds: int
     end_seconds: int
     service: ScreenshotSupportedService = ScreenshotSupportedService.YOUTUBE
+
+    def __repr__(self):
+        return f""" 
+{self.url}
+{self.start_seconds}
+{self.end_seconds}
+"""

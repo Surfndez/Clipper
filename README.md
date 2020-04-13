@@ -11,6 +11,9 @@
 
 
 #### Run Application
+* Start ngrok and get URL
+* Get a Twilio Number and add ngrok URL/sms to Twilio Number
+LOOK HERE AND AUTOMATE THIS https://www.twilio.com/docs/twilio-cli/general-usage#webhooks
 * Create a Google Cloud Vision Enabled Project and Download `key.json`
 
 
@@ -29,6 +32,7 @@
 
 
     docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+   
 
 5) Start Message Consumer `worker.py`
 
@@ -37,3 +41,23 @@
 * `nodemon` -  automatically restarting program when you make changes - https://nodemon.io/
 * `ngrok` - exposing localhost to all of your friends (and enemies) - https://dashboard.ngrok.com/get-started
 * `docker`?
+
+
+
+
+# ORGANIZE THIS HELPFUL STUFF
+
+## Twilio
+### First Time Setup
+    brew tap twilio/brew && brew install twilio
+    twilio login
+    twilio autocomplete zsh
+    printf "$(twilio autocomplete:script zsh)" >> ~/.zshrc; source ~/.zshrc
+        
+### Subsequent Changes    
+    twilio phone-numbers:list 
+    twilio phone-numbers:update YOUR_NUMBER --sms-url YOUR_URL/sms
+
+
+# Problems
+Get google application credentials into environemnt where its needed. I need to figure out docker for this

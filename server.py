@@ -1,6 +1,5 @@
 import dataclasses
 import json
-import re
 from urllib.parse import unquote
 
 import pika
@@ -15,7 +14,6 @@ from pyclipper.request_parser import ClipperTextMessageParser
 from pyclipper.screenshot_metadata_parser import ScreenshotMetadataParser
 
 c = Config()
-
 
 SECRET_KEY = "a secret key"
 app = Flask(__name__, static_folder="assets")
@@ -52,20 +50,6 @@ def clip_download(clip):
     return send_file(f"pyclipper/assets/clips/{unquote(clip)}", as_attachment=True)
 
 
-def is_url(url):
-    regex = re.compile(
-        r"^(?:http|ftp)s?://"  # http:// or https://
-        r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"  # domain...
-        r"localhost|"  # localhost...
-        r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # ...or ip
-        r"(?::\d+)?"  # optional port
-        r"(?:/?|[/?]\S+)$",
-        re.IGNORECASE,
-    )
-
-    return re.match(regex, url) is not None
-
-
 @app.route("/sms", methods=["GET", "POST"])
 def on_text_received():
     """Callback triggered upon receiving a text from a user of Clipper™."""
@@ -75,29 +59,53 @@ def on_text_received():
 
     if request.values["NumMedia"] != "0":
         image_url = request.values["MediaUrl0"]
+        print(image_url)
         parsed = ScreenshotMetadataParser(image_url).parse()
     else:
         parsed = ClipperTextMessageParser(text_message)
 
-    # try:
     msg = dataclasses.asdict(parsed)
     msg["phone"] = from_number
     print(msg)
-    # except RequestArgumentException:
-    #     resp = MessagingResponse()
-    #     resp.message(
-    #         f"""
-    #         We can't figure out that response. Please send a text with just the video URL, a start time and an end time.
-    #
-    #         Here's an example:
-    #
-    #         {c.demo_text}
-    #         """
-    #     )
-    #     return str(resp)
 
     queue_message(msg)
 
+    resp = MessagingResponse()
+    resp.message(
+        "We've received your request and will text you your clip URL when it's ready!"
+    )
+    session[from_number] = {"processing": True}
+    return str(resp)
+
+
+@app.route("/sendme")
+def send_msg_to_me():
+    pass
+    # message = client.messages.create(
+    #     body="Join Earth's mightiest heroes. Like Kevin Bacon.",
+    #     from_=c.twilio_phone_number,
+    #     to=c.my_phone_number,
+    # )
+    #
+    # return json.dumps(message)
+
+
+@app.route("/testsms")
+def test_screenshot_server():
+    """Callback triggered upon receiving a text from a user of Clipper™."""
+
+    from_number = "+16189808247"
+
+    image_url = "https://s3-external-1.amazonaws.com/media.twiliocdn.com/AC7cb1353ffd7b7ecb491ad68e2dd7461c/229fc07e5db0dac9d865125a9d1651bb"
+    parsed = ScreenshotMetadataParser(image_url).parse()
+
+    msg = dataclasses.asdict(parsed)
+    msg["phone"] = from_number
+    print(msg)
+
+    queue_message(msg)
+
+    # TODO move response to post queue process so screenshot parsing doesn't block requests
     resp = MessagingResponse()
     resp.message(
         "We've received your request and will text you your clip URL when it's ready!"
@@ -116,7 +124,7 @@ def queue_message(msg):
         exchange="",
         routing_key="task_queue",
         body=json.dumps(msg),
-        properties=pika.BasicProperties(delivery_mode=2,),  # make message persistent
+        # properties=pika.BasicProperties(delivery_mode=2,),  # make message persistent
     )
     print(" [x] Sent %r" % msg)
     connection.close()
