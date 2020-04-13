@@ -139,7 +139,6 @@ def read_image(image_uri):
         image = types.Image(content=requests.get(image_uri).content)
         response = client.text_detection(image=image)
 
-    pp(response)
     # for text in response.text_annotations:
     #     print("=" * 79)
     #     print(f'"{text.description}"')

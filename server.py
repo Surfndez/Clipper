@@ -139,7 +139,7 @@ def on_clip_ready():
     phone = clip_ready_response.get("phone")
     send_text(
         f"""
-    Your clip is ready (📼 = ✅)
+    Your clip is ready 📼 = ✅
 
     {clip_url}
     """,
