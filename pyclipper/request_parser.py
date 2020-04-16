@@ -17,10 +17,10 @@ class ClipperTextMessageParser:
         if len(tokens) < 3:
             raise RequestArgumentException()
 
-        self._video_url = tokens[0]
-        self._start = VideoTimestamp(tokens[1]).seconds
-        self._end = VideoTimestamp(tokens[2]).seconds
+        self.video_url = tokens[0]
+        self.start = VideoTimestamp(tokens[1]).seconds
+        self.end = VideoTimestamp(tokens[2]).seconds
 
     @property
     def data(self) -> ScreenshotMetadata:
-        return ScreenshotMetadata(self._video_url, self.start, self.end)
+        return ScreenshotMetadata(self.video_url, self.start, self.end)

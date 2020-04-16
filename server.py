@@ -22,12 +22,6 @@ app.config.from_object(__name__)
 client = Client(c.account_sid, c.auth_token)
 
 
-@app.route("/s")
-def stest():
-    session.clear()
-    return "cleared"
-
-
 @app.route("/")
 def index():
     return f"""
@@ -62,7 +56,7 @@ def on_text_received():
         print(image_url)
         parsed = ScreenshotMetadataParser(image_url).parse()
     else:
-        parsed = ClipperTextMessageParser(text_message)
+        parsed = ClipperTextMessageParser(text_message).data
 
     msg = dataclasses.asdict(parsed)
     msg["phone"] = from_number
@@ -70,42 +64,6 @@ def on_text_received():
 
     queue_message(msg)
 
-    resp = MessagingResponse()
-    resp.message(
-        "We've received your request and will text you your clip URL when it's ready!"
-    )
-    session[from_number] = {"processing": True}
-    return str(resp)
-
-
-@app.route("/sendme")
-def send_msg_to_me():
-    pass
-    # message = client.messages.create(
-    #     body="Join Earth's mightiest heroes. Like Kevin Bacon.",
-    #     from_=c.twilio_phone_number,
-    #     to=c.my_phone_number,
-    # )
-    #
-    # return json.dumps(message)
-
-
-@app.route("/testsms")
-def test_screenshot_server():
-    """Callback triggered upon receiving a text from a user of Clipper™."""
-
-    from_number = "+16189808247"
-
-    image_url = "https://s3-external-1.amazonaws.com/media.twiliocdn.com/AC7cb1353ffd7b7ecb491ad68e2dd7461c/229fc07e5db0dac9d865125a9d1651bb"
-    parsed = ScreenshotMetadataParser(image_url).parse()
-
-    msg = dataclasses.asdict(parsed)
-    msg["phone"] = from_number
-    print(msg)
-
-    queue_message(msg)
-
-    # TODO move response to post queue process so screenshot parsing doesn't block requests
     resp = MessagingResponse()
     resp.message(
         "We've received your request and will text you your clip URL when it's ready!"
@@ -124,19 +82,20 @@ def queue_message(msg):
         exchange="",
         routing_key="task_queue",
         body=json.dumps(msg),
-        # properties=pika.BasicProperties(delivery_mode=2,),  # make message persistent
+        properties=pika.BasicProperties(delivery_mode=2,),  # make message persistent
     )
     print(" [x] Sent %r" % msg)
     connection.close()
 
 
 @app.route(f"/{c.video_clip_complete_path}", methods=["POST"])
-def on_clip_ready():
+def clip_ready_webhook():
     clip_ready_response = request.get_json()
-    print(clip_ready_response)
+
     # TODO: Make Class for Ready Response
     clip_url = clip_ready_response.get("clip_url")
     phone = clip_ready_response.get("phone")
+
     send_text(
         f"""
     Your clip is ready 📼 = ✅
