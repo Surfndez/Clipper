@@ -48,28 +48,39 @@ def clip_download(clip):
 def on_text_received():
     """Callback triggered upon receiving a text from a user of Clipper™."""
 
-    text_message = request.values.get("Body", None)
+    print("=" * 80)
+    print("text received ", "=" * (80 - len("text received")))
+    print("=" * 80)
+
+    text = request.values.get("Body", None)
     from_number = request.values.get("From", None)
 
     if request.values["NumMedia"] != "0":
         image_url = request.values["MediaUrl0"]
-        print(image_url)
-        parsed = ScreenshotMetadataParser(image_url).parse()
-    else:
-        parsed = ClipperTextMessageParser(text_message).data
 
-    msg = dataclasses.asdict(parsed)
-    msg["phone"] = from_number
-    print(msg)
+    # parsed = ScreenshotMetadataParser(image_url).parse()
+    # parsed = ClipperTextMessageParser(text_message).data
 
-    queue_message(msg)
+    print(from_number)
+    print(text)
+    print(image_url)
 
-    resp = MessagingResponse()
-    resp.message(
-        "We've received your request and will text you your clip URL when it's ready!"
-    )
-    session[from_number] = {"processing": True}
-    return str(resp)
+    print(json.dumps(request))
+
+    return "good"
+
+    # msg = dataclasses.asdict(parsed)
+    # msg["phone"] = from_number
+    # print(msg)
+    #
+    # queue_message(msg)
+    #
+    # resp = MessagingResponse()
+    # resp.message(
+    #     "We've received your request and will text you your clip URL when it's ready!"
+    # )
+    # session[from_number] = {"processing": True}
+    # return str(resp)
 
 
 def queue_message(msg):

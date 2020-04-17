@@ -1,9 +1,12 @@
+import json
+import os
 import re
 from pprint import pprint as pp
 from fuzzywuzzy import process
 
 import requests
 
+from pyclipper.config import Config
 from pyclipper.screenshot_metadata import ScreenshotMetadata
 from pyclipper.timestamp import VideoTimestamp
 from utils import find_items_starting_with
@@ -120,6 +123,22 @@ def parse_youtube_screenshot_text(text) -> ScreenshotMetadata:
     return ScreenshotMetadata(url, start_seconds, end_seconds)
 
 
+def save_image_info(image_uri, info):
+    screenshot_path = Config().screenshot_mount_point
+    count = len(os.listdir(screenshot_path))
+
+    image_ext = ".png"
+    image_name = f"{count:04d}{image_ext}"
+    attributes_ext = ".json"
+    attributes_name = f"{count:04d}{attributes_ext}"
+
+    with open(os.path.join(screenshot_path, image_name), "wb") as f:
+        f.write(requests.get(image_uri).content)
+
+    with open(os.path.join(screenshot_path, attributes_name), "wb") as f:
+        f.write(json.dumps(info))
+
+
 def read_image(image_uri):
 
     from google.cloud import vision
@@ -139,6 +158,7 @@ def read_image(image_uri):
         image = types.Image(content=requests.get(image_uri).content)
         response = client.text_detection(image=image)
 
+    save_image_info(image_uri, response)
     # for text in response.text_annotations:
     #     print("=" * 79)
     #     print(f'"{text.description}"')

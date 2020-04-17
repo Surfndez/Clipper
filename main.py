@@ -9,14 +9,8 @@ from server import start_server
 history_path = os.path.expanduser("~/.pyhistory")
 
 
-def start_rabbitmq():
-    start_rabbitmq_cmd = "docker run --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management".split()
-    subprocess.run(start_rabbitmq_cmd)
-
-
 def main(args):
     start_server()
-    # start_rabbitmq()
 
 
 def save_history():
