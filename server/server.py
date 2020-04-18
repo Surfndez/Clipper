@@ -9,9 +9,10 @@ from flask import send_file
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 
+
+# from pyclipper.request_parser import ClipperTextMessageParser
+# from pyclipper.screenshot_metadata_parser import ScreenshotMetadataParser
 from pyclipper.config import Config
-from pyclipper.request_parser import ClipperTextMessageParser
-from pyclipper.screenshot_metadata_parser import ScreenshotMetadataParser
 
 c = Config()
 
@@ -54,36 +55,30 @@ def on_text_received():
 
     text = request.values.get("Body", None)
     from_number = request.values.get("From", None)
+    image_url = None
 
     if request.values["NumMedia"] != "0":
         image_url = request.values["MediaUrl0"]
-
-    # parsed = ScreenshotMetadataParser(image_url).parse()
-    # parsed = ClipperTextMessageParser(text_message).data
 
     print(from_number)
     print(text)
     print(image_url)
 
-    print(json.dumps(request))
-
     return "good"
 
-    # msg = dataclasses.asdict(parsed)
-    # msg["phone"] = from_number
-    # print(msg)
+    # r = ClipperRequest(from_number, text, image_url)
     #
-    # queue_message(msg)
+    # queue_message(r.json)
     #
     # resp = MessagingResponse()
     # resp.message(
     #     "We've received your request and will text you your clip URL when it's ready!"
     # )
-    # session[from_number] = {"processing": True}
+    # # session[from_number] = {"processing": True}
     # return str(resp)
 
 
-def queue_message(msg):
+def queue_message(json_msg):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
     channel = connection.channel()
 
@@ -92,10 +87,10 @@ def queue_message(msg):
     channel.basic_publish(
         exchange="",
         routing_key="task_queue",
-        body=json.dumps(msg),
+        body=json_msg,
         properties=pika.BasicProperties(delivery_mode=2,),  # make message persistent
     )
-    print(" [x] Sent %r" % msg)
+    print(" [x] Sent %r" % json_msg)
     connection.close()
 
 

@@ -8,6 +8,7 @@ full_video_path = f"{full_video_path_prefix}/{youtube_id}.mp4"
 
 
 class TestVideoTrimSpeed(unittest.TestCase):
+    @unittest.skip
     def test_video_trim_speed(self):
         tic = time.perf_counter()
         start = 4

@@ -1,6 +1,5 @@
 import unittest
 
-from pyclipper.screenshot_metadata_parser import parse_youtube_screenshot_text
 from utils import find_items_starting_with
 
 

@@ -10,16 +10,15 @@ from pyclipper.config import Config
 
 c = Config()
 
-
-class EndTimeNeededError(Exception):
-    def __init__(self):
-        self.message = "End Time Required."
-        super(EndTimeNeededError, self).__init__(self.message)
+DEFAULT_CLIP_LENGTH = 10
 
 
 def download_and_trim(video_identifier, start, end=None):
     if end is None:
-        raise EndTimeNeededError()
+        end = start + DEFAULT_CLIP_LENGTH
+
+    if end < start:
+        start, end = end, start
 
     if not isinstance(video_identifier, str):
         return
@@ -47,7 +46,6 @@ def download_and_trim(video_identifier, start, end=None):
             ydl.download([video_identifier])
 
     if not os.path.exists(clip_path):
-
         "ffmpeg " "-i iXwfBJYCTc4.mp4 " "-ss 4 " "-to 2:44 " "-c:v copy " "-c:a copy" " clip.mp4"
         ffmpeg.input(video, ss=start, to=end).output(
             clip_path, vcodec="copy", acodec="copy"

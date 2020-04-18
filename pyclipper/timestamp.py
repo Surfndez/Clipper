@@ -1,4 +1,6 @@
 class VideoTimestamp:
+    """Represents a timestamp in the form dd:dd:dd, dd:dd or dd"""
+
     def __init__(self, stamp):
         self._raw = stamp.split(":")
         vals = list(map(int, self._raw))
