@@ -1,5 +1,3 @@
-import dataclasses
-import json
 from urllib.parse import unquote
 
 import pika
@@ -9,10 +7,10 @@ from flask import send_file
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 
-
 # from pyclipper.request_parser import ClipperTextMessageParser
 # from pyclipper.screenshot_metadata_parser import ScreenshotMetadataParser
 from pyclipper.config import Config
+from pyclipper.request import ClipperServerRequestData
 
 c = Config()
 
@@ -49,10 +47,6 @@ def clip_download(clip):
 def on_text_received():
     """Callback triggered upon receiving a text from a user of Clipper™."""
 
-    print("=" * 80)
-    print("text received ", "=" * (80 - len("text received")))
-    print("=" * 80)
-
     text = request.values.get("Body", None)
     from_number = request.values.get("From", None)
     image_url = None
@@ -60,25 +54,19 @@ def on_text_received():
     if request.values["NumMedia"] != "0":
         image_url = request.values["MediaUrl0"]
 
-    print(from_number)
-    print(text)
-    print(image_url)
+    r = ClipperServerRequestData(from_number, text, image_url)
 
-    return "good"
+    queue_message(r)
 
-    # r = ClipperRequest(from_number, text, image_url)
-    #
-    # queue_message(r.json)
-    #
-    # resp = MessagingResponse()
-    # resp.message(
-    #     "We've received your request and will text you your clip URL when it's ready!"
-    # )
+    resp = MessagingResponse()
+    resp.message(
+        "We've received your request and will text you your clip URL when it's ready!"
+    )
     # # session[from_number] = {"processing": True}
-    # return str(resp)
+    return str(resp)
 
 
-def queue_message(json_msg):
+def queue_message(r: ClipperServerRequestData):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
     channel = connection.channel()
 
@@ -87,18 +75,21 @@ def queue_message(json_msg):
     channel.basic_publish(
         exchange="",
         routing_key="task_queue",
-        body=json_msg,
+        body=r.json,
         properties=pika.BasicProperties(delivery_mode=2,),  # make message persistent
     )
-    print(" [x] Sent %r" % json_msg)
+    print(" [x] Sent %r" % r)
     connection.close()
 
 
 @app.route(f"/{c.video_clip_complete_path}", methods=["POST"])
 def clip_ready_webhook():
+
     clip_ready_response = request.get_json()
 
-    # TODO: Make Class for Ready Response
+    secret = clip_ready_response.get("secret")
+    if secret != c.secret:
+        return "you dont belong here. I belong here. I inspired the Hopsins... goat 🐐"
     clip_url = clip_ready_response.get("clip_url")
     phone = clip_ready_response.get("phone")
 

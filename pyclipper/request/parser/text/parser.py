@@ -14,5 +14,5 @@ def parse_text(text: str) -> ClipRequestData:
         return ClipRequestData()
     video_url = first_url(text)
     t1, t2 = extract_two_timestamp_seconds(text)
-    start, end = (t1, t2) if t1 < t2 else (t2, t1)
+    start, end = (t1, t2)
     return ClipRequestData(video_url, start, end)

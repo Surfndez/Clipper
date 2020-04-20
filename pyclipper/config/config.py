@@ -14,6 +14,7 @@ class Config:
         self._base_url = server["base_url"]
         self._flask_port = server.getint("flask_port")
         self._video_clip_complete_path = server["video_clip_complete_path"]
+        self._secret = server["secret"]
 
         self._account_sid = twilio["account_sid"]
         self._auth_token = twilio["auth_token"]
@@ -36,6 +37,10 @@ class Config:
     @property
     def video_clip_complete_path(self):
         return self._video_clip_complete_path
+
+    @property
+    def secret(self):
+        return self._secret
 
     @property
     def account_sid(self):

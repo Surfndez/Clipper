@@ -99,6 +99,7 @@ def parse_youtube_screenshot_text(text) -> ClipRequestData:
         start_seconds, end_seconds = relevant_timestamps[0:2]
     else:
         start_seconds = relevant_timestamps[0]
+        end_seconds = None
 
     # I believe YouTube Titles are limited to two lines. This helps in parsing the screenshot
     MAX_TITLE_LINES = 2

@@ -77,3 +77,25 @@ class TestClipperServerRequests(unittest.TestCase):
 
         # assert
         self.assertEqual(asdict(expected), asdict(actual))
+
+    def test_image_with_two_timestamps_with_no_text_uses_default_clip_length(self):
+        # arrange
+        two_timestamp_screenshot = "https://i.imgur.com/9bpBzMp.jpg"
+        two_timestamp_url = "https://www.youtube.com/watch?v=3OP-q55hOUI"
+        two_timestamp_text = None
+        two_timestamp_t1_seconds = 134
+        two_timestamp_t2_seconds = 144
+
+        request = ClipperServerRequestData(
+            "phone", two_timestamp_screenshot, two_timestamp_text
+        )
+
+        expected = ClipRequestData(
+            two_timestamp_url, two_timestamp_t1_seconds, two_timestamp_t2_seconds,
+        )
+
+        # act
+        actual = parse_incoming_clipper_text_request(request)
+
+        # assert
+        self.assertEqual(asdict(expected), asdict(actual))
