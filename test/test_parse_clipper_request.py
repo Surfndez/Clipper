@@ -5,18 +5,6 @@ from pyclipper.clip.request import ClipRequestData
 from pyclipper.request import ClipperServerRequestData
 from pyclipper.request.parser.parser import parse_incoming_clipper_text_request
 
-two_timestamp_screenshot = "https://i.imgur.com/9bpBzMp.jpg"
-two_timestamp_url = "https://www.youtube.com/watch?v=3OP-q55hOUI"
-two_timestamp_text = 174
-two_timestamp_t1_seconds = 134
-two_timestamp_t2_seconds = 174
-
-two_timestamp_before_screenshot = "https://i.imgur.com/9bpBzMp.jpg"
-two_timestamp_before_url = "https://www.youtube.com/watch?v=3OP-q55hOUI"
-two_timestamp_before_text = 114
-two_timestamp_before_t1_seconds = 134
-two_timestamp_before_t2_seconds = 114
-
 
 class TestClipperServerRequests(unittest.TestCase):
     """
@@ -60,6 +48,28 @@ class TestClipperServerRequests(unittest.TestCase):
 
         expected = ClipRequestData(
             three_timestamp_url, three_timestamp_t1_seconds, three_timestamp_t2_seconds,
+        )
+
+        # act
+        actual = parse_incoming_clipper_text_request(request)
+
+        # assert
+        self.assertEqual(asdict(expected), asdict(actual))
+
+    def test_image_with_two_timestamps_with_text(self):
+        # arrange
+        two_timestamp_screenshot = "https://i.imgur.com/9bpBzMp.jpg"
+        two_timestamp_url = "https://www.youtube.com/watch?v=3OP-q55hOUI"
+        two_timestamp_text = "2:54"
+        two_timestamp_t1_seconds = 134
+        two_timestamp_t2_seconds = 174
+
+        request = ClipperServerRequestData(
+            "phone", two_timestamp_screenshot, two_timestamp_text
+        )
+
+        expected = ClipRequestData(
+            two_timestamp_url, two_timestamp_t1_seconds, two_timestamp_t2_seconds,
         )
 
         # act

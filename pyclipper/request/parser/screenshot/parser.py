@@ -8,19 +8,14 @@ from fuzzywuzzy import process
 from pyclipper.clip.request import ClipRequestData
 from pyclipper.config import Config
 from pyclipper.timestamp import VideoTimestamp
-from utils import find_items_starting_with
+from utils import find_items_starting_with, consecutive, cheat_youtube_url_lookup
 from google.protobuf.json_format import MessageToJson
 
 
-def consecutive(nums):
-    return sorted(nums) == list(range(min(nums), max(nums) + 1))
-
-
-def re_in_list_search(strings, search_re) -> [str]:
-    return list(filter(search_re.match, strings))[0] or -1
-
-
 def youtube_url(title):
+    cached = cheat_youtube_url_lookup(title)
+    if cached:
+        return cached
     import urllib.request
     from bs4 import BeautifulSoup
 
@@ -96,11 +91,14 @@ def parse_youtube_screenshot_text(text) -> ClipRequestData:
     views_line_index = first_match_re(views_re)
 
     relevant_timestamps_indices = {key: all_ts_indices[key] for key in save_keys}
-
-    # lol I just wanted to see if I could write this pythonically. Seems complicated though
-    start_seconds, end_seconds = sorted(
+    relevant_timestamps = sorted(
         list(VideoTimestamp(ts).seconds for ts in relevant_timestamps_indices.values())
-    )[0:2]
+    )
+
+    if two_timestamps_attempt:
+        start_seconds, end_seconds = relevant_timestamps[0:2]
+    else:
+        start_seconds = relevant_timestamps[0]
 
     # I believe YouTube Titles are limited to two lines. This helps in parsing the screenshot
     MAX_TITLE_LINES = 2
@@ -209,6 +207,5 @@ def read_image(image_uri, skip_cache=False):
 def parse_screenshot(image) -> ClipRequestData:
     if image is None:
         return ClipRequestData()
-    print(f"Parsing {image}")
     text = read_image(image)
     return parse_youtube_screenshot_text(text)

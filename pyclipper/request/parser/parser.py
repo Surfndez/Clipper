@@ -31,7 +31,7 @@ def extract_url(image_request, text_request):
     return final_url
 
 
-def extract_timestamps(image_request, text_request):
+def determine_timestamps(image_request, text_request):
     timestamps = [
         image_request.start_seconds,
         image_request.end_seconds,
@@ -52,7 +52,7 @@ def extract_timestamps(image_request, text_request):
 
 def merge_requests(image_request, text_request) -> ClipRequestData:
     url = extract_url(image_request, text_request)
-    start, end = extract_timestamps(image_request, text_request)
+    start, end = determine_timestamps(image_request, text_request)
 
     return ClipRequestData(url, start, end)
 
