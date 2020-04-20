@@ -198,9 +198,6 @@ def read_image(image_uri, skip_cache=False):
         image = types.Image(content=requests.get(image_uri).content)
         response = client.text_detection(image=image)
 
-    print("hi")
-    print(response)
-
     save_image_info(image_uri, response)
     return response.full_text_annotation.text
 

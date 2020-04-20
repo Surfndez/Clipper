@@ -3,7 +3,6 @@ from urllib.parse import quote
 
 import ffmpeg
 import youtube_dl
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 from requests.compat import urljoin
 
 from pyclipper.config import Config
@@ -21,12 +20,19 @@ def download_and_trim(video_identifier, start, end=None):
     if not isinstance(video_identifier, str):
         return
 
-    videos = "pyclipper/assets"
+    # TODO move to config
+    videos = "server/assets"
     full_video_path = f"{videos}/full"
     clips_path = f"{videos}/clips"
+
+    if not os.path.exists(full_video_path):
+        os.mkdir(full_video_path)
+    if not os.path.exists(clips_path):
+        os.mkdir(clips_path)
+
     extension = ".mp4"
 
-    template = "pyclipper/assets/full/%(id)s.%(ext)s"
+    template = "server/assets/full/%(id)s.%(ext)s"
 
     ydl_opts = {"outtmpl": template, "format": "mp4"}
 

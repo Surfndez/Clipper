@@ -2,6 +2,7 @@
 base_url =
 flask_port = 5000
 video_clip_complete_path = protectme
+secret =
 
 [twilio]
 account_sid =
@@ -12,3 +13,9 @@ demo_url = https://www.youtube.com/watch?v=LYB00pdOnEc
 demo_start = 2:32
 demo_end = 5:14
 demo_text = %(demo_url)s %(demo_start)s %(demo_end)s
+
+[files]
+SCREENSHOT_MOUNT_POINT =
+
+[clips]
+DEFAULT_CLIP_LENGTH = 10

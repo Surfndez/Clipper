@@ -19,7 +19,6 @@ def extract_two_timestamp_seconds(text):
     regex = re.compile(r"(?:(?:(\d+):)?(\d+):)(\d+)")
     timestamps = [hms_to_seconds(h, m, s) for h, m, s in regex.findall(text)]
 
-    # q.d()
     if len(timestamps) >= 2:
         return timestamps[0], timestamps[1]
     elif len(timestamps) == 1:

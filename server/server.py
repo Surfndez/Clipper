@@ -40,7 +40,7 @@ def index():
 @app.route("/clips/<clip>")
 def clip_download(clip):
     # TODO: open graph protocol https://ogp.me/
-    return send_file(f"pyclipper/assets/clips/{unquote(clip)}", as_attachment=True)
+    return send_file(f"assets/clips/{unquote(clip)}", as_attachment=True)
 
 
 @app.route("/sms", methods=["GET", "POST"])
@@ -54,7 +54,7 @@ def on_text_received():
     if request.values["NumMedia"] != "0":
         image_url = request.values["MediaUrl0"]
 
-    r = ClipperServerRequestData(from_number, text, image_url)
+    r = ClipperServerRequestData(phone=from_number, image_url=image_url, text=text)
 
     queue_message(r)
 

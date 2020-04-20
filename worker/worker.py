@@ -1,3 +1,5 @@
+from dataclasses import astuple
+
 import pika
 import requests
 
@@ -16,8 +18,11 @@ print(" [*] Waiting for messages. To exit press CTRL+C")
 
 
 def callback(ch, method, properties, body):
-    r = ClipperServerRequestData(request_json=body)
-    url, start_seconds, end_seconds = parse_incoming_clipper_text_request(r)
+    # print(body)
+    # ch.basic_ack(delivery_tag=method.delivery_tag)
+    # pass
+    r = ClipperServerRequestData(request_json=body.decode("utf-8"))
+    url, start_seconds, end_seconds, _ = astuple(parse_incoming_clipper_text_request(r))
 
     clip_url = download_and_trim(url, start_seconds, end_seconds)
 
@@ -29,7 +34,7 @@ def callback(ch, method, properties, body):
     print(" [x] Done")
 
 
-channel.basic_qos(prefetch_count=1)
+channel.basic_qos(prefetch_count=0)
 channel.basic_consume(queue="task_queue", on_message_callback=callback)
 
 channel.start_consuming()

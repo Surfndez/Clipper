@@ -15,3 +15,8 @@ class ClipperServerRequestData:
     @property
     def json(self):
         return json.dumps(vars(self))
+
+    def __repr__(self):
+        return f"""phone\t{self.phone}    
+                   image\t{self.image_url}    
+                   text\t{self.text}"""
