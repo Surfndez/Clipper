@@ -33,7 +33,7 @@ def pop_url(text):
 
 def extract_timestamps(text):
     regex = re.compile(r"(?:(?:(\d+):)?(\d+):)(\d+)")
-    timestamps = list(regex.finditer(text))
+    timestamps = list(m.group() for m in regex.finditer(text))
 
     if len(timestamps) >= 2:
         t1, t2 = timestamps[:2]
@@ -46,6 +46,8 @@ def extract_timestamps(text):
 
 
 def parse_text(text: str) -> ClipRequestData:
+    if text is None:
+        return ClipRequestData()
     video_url, text = pop_url(text)
     t1, t2 = extract_timestamps(text)
     start, end = (t1, t2) if t1 < t2 else (t2, t1)

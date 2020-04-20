@@ -207,6 +207,8 @@ def read_image(image_uri, skip_cache=False):
 
 
 def parse_screenshot(image) -> ClipRequestData:
+    if image is None:
+        return ClipRequestData()
     print(f"Parsing {image}")
     text = read_image(image)
     return parse_youtube_screenshot_text(text)

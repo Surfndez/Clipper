@@ -10,12 +10,10 @@ from pyclipper.config import Config
 
 c = Config()
 
-DEFAULT_CLIP_LENGTH = 10
-
 
 def download_and_trim(video_identifier, start, end=None):
     if end is None:
-        end = start + DEFAULT_CLIP_LENGTH
+        end = start + c.default_clip_length
 
     if end < start:
         start, end = end, start

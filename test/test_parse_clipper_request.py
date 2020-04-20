@@ -1,30 +1,21 @@
 import unittest
+from dataclasses import asdict
 
 from pyclipper.clip.request import ClipRequestData
 from pyclipper.request import ClipperServerRequestData
 from pyclipper.request.parser.parser import parse_incoming_clipper_text_request
 
-THREE_TIMESTAMP_SCREENSHOT = "https://i.imgur.com/NilxzJP.png"
-THREE_TIMESTAMP_URL = "https://www.youtube.com/watch?v=J3pF2jkQ4vc"
-THREE_TIMESTAMP_TEXT = None
-THREE_TIMESTAMP_T1_SECONDS = 13092
-THREE_TIMESTAMP_T2_SECONDS = 16364
+two_timestamp_screenshot = "https://i.imgur.com/9bpBzMp.jpg"
+two_timestamp_url = "https://www.youtube.com/watch?v=3OP-q55hOUI"
+two_timestamp_text = 174
+two_timestamp_t1_seconds = 134
+two_timestamp_t2_seconds = 174
 
-
-TWO_TIMESTAMP_SCREENSHOT = "https://i.imgur.com/9bpBzMp.jpg"
-TWO_TIMESTAMP_URL = "https://www.youtube.com/watch?v=3OP-q55hOUI"
-TWO_TIMESTAMP_TEXT = 174
-TWO_TIMESTAMP_T1_SECONDS = 134
-TWO_TIMESTAMP_T2_SECONDS = 174
-
-
-TWO_TIMESTAMP_BEFORE_SCREENSHOT = "https://i.imgur.com/9bpBzMp.jpg"
-TWO_TIMESTAMP_BEFORE_URL = "https://www.youtube.com/watch?v=3OP-q55hOUI"
-TWO_TIMESTAMP_BEFORE_TEXT = 114
-TWO_TIMESTAMP_BEFORE_T1_SECONDS = 134
-TWO_TIMESTAMP_BEFORE_T2_SECONDS = 114
-
-# TODO backwards video if user is an idiot
+two_timestamp_before_screenshot = "https://i.imgur.com/9bpBzMp.jpg"
+two_timestamp_before_url = "https://www.youtube.com/watch?v=3OP-q55hOUI"
+two_timestamp_before_text = 114
+two_timestamp_before_t1_seconds = 134
+two_timestamp_before_t2_seconds = 114
 
 
 class TestClipperServerRequests(unittest.TestCase):
@@ -33,35 +24,46 @@ class TestClipperServerRequests(unittest.TestCase):
 
     """
 
-    def test_incoming_requests_happy_path_parsed_correctly(self):
+    def test_image_with_three_timestamps(self):
         # arrange
-        request_result_pairs = [
-            (
-                ClipperServerRequestData(
-                    "phone", THREE_TIMESTAMP_SCREENSHOT, THREE_TIMESTAMP_TEXT
-                ),
-                ClipRequestData(
-                    THREE_TIMESTAMP_URL,
-                    THREE_TIMESTAMP_T1_SECONDS,
-                    THREE_TIMESTAMP_T2_SECONDS,
-                ),
-            ),
-            (
-                ClipperServerRequestData(
-                    "phone", TWO_TIMESTAMP_SCREENSHOT, TWO_TIMESTAMP_TEXT
-                ),
-                ClipRequestData(
-                    TWO_TIMESTAMP_URL,
-                    TWO_TIMESTAMP_T1_SECONDS,
-                    TWO_TIMESTAMP_T2_SECONDS,
-                ),
-            ),
-        ]
+        three_timestamp_screenshot = "https://i.imgur.com/NilxzJP.png"
+        three_timestamp_url = "https://www.youtube.com/watch?v=J3pF2jkQ4vc"
+        three_timestamp_text = None
+        three_timestamp_t1_seconds = 13092
+        three_timestamp_t2_seconds = 16364
+
+        request = ClipperServerRequestData(
+            "phone", three_timestamp_screenshot, three_timestamp_text
+        )
+
+        expected = ClipRequestData(
+            three_timestamp_url, three_timestamp_t1_seconds, three_timestamp_t2_seconds,
+        )
 
         # act
-        for request, data in request_result_pairs:
-            actual = parse_incoming_clipper_text_request(request)
-            expected = data
+        actual = parse_incoming_clipper_text_request(request)
 
-            # assert
-            self.assertEqual(expected, actual)
+        # assert
+        self.assertEqual(asdict(expected), asdict(actual))
+
+    def test_image_with_three_timestamps_with_text(self):
+        # arrange
+        three_timestamp_screenshot = "https://i.imgur.com/NilxzJP.png"
+        three_timestamp_url = "https://www.youtube.com/watch?v=J3pF2jkQ4vc"
+        three_timestamp_text = "4:44 this should be ignored 3:33"
+        three_timestamp_t1_seconds = 13092
+        three_timestamp_t2_seconds = 16364
+
+        request = ClipperServerRequestData(
+            "phone", three_timestamp_screenshot, three_timestamp_text
+        )
+
+        expected = ClipRequestData(
+            three_timestamp_url, three_timestamp_t1_seconds, three_timestamp_t2_seconds,
+        )
+
+        # act
+        actual = parse_incoming_clipper_text_request(request)
+
+        # assert
+        self.assertEqual(asdict(expected), asdict(actual))
