@@ -1,21 +1,38 @@
-import json
 import os
 import re
 
 import requests
-from fuzzywuzzy import process
+from fuzzywuzzy import process, fuzz
+from google.protobuf.json_format import MessageToJson
 
 from pyclipper.clip.request import ClipRequestData
 from pyclipper.config import Config
 from pyclipper.timestamp import VideoTimestamp
 from utils import find_items_starting_with, consecutive, cheat_youtube_url_lookup
-from google.protobuf.json_format import MessageToJson
+
+
+def check_for_youtube_url(title_lines):
+    print(title_lines)
+    # first, check most obviously for full title
+    url = youtube_url(" ".join(title_lines))
+    print(url)
+
+    # if the search did not work for both lines, we could have noise in the title
+    # such as hashtags, location, etc. Try searching for just the second line,
+    # which for YouTube videos will be directly above the watch count.
+    if not url and len(title_lines) == 2:
+        url = youtube_url(title_lines[1])
+    return url
 
 
 def youtube_url(title):
+    """Searches YouTube by title for a video URL. Returns None if no good match is found."""
+
+    print(title)
     cached = cheat_youtube_url_lookup(title)
     if cached:
         return cached
+
     import urllib.request
     from bs4 import BeautifulSoup
 
@@ -34,13 +51,29 @@ def youtube_url(title):
     (expected_title, score, url) = process.extractOne(title, match_dict)
 
     if score < 95:
-        raise Exception(
-            f"Can't find a URL for a YouTube video with title {title}."
-            f"\n\n"
-            f"Closest match is {expected_title} with probability of {score}."
-        )
+        return None
 
     return url
+
+
+from pprint import pprint as p
+
+
+def first_match_re(regex, lines):
+
+    return [i for i, line in enumerate(lines) if re.search(regex, line)][0]
+
+
+views_re = re.compile(r"\d*.* views")
+
+
+def extract_youtube_title_lines_from_screenshot_text(screenshot_text_lines):
+    views_line_index = first_match_re(views_re, screenshot_text_lines)
+
+    youtube_title_range = slice(views_line_index - 2, views_line_index)
+
+    youtube_title_lines = screenshot_text_lines[youtube_title_range]
+    return youtube_title_lines
 
 
 def parse_youtube_screenshot_text(text) -> ClipRequestData:
@@ -51,11 +84,13 @@ def parse_youtube_screenshot_text(text) -> ClipRequestData:
     # [/YOUTUBE]
     double_tap_text = "Double tap left or right to skip 10 seconds"
     timestamp_re = re.compile(r"(?:(?:(\d+):)?(\d+):)(\d\d)")
-    views_re = re.compile(r"\d*.* views")
 
     lines = list(
         line for line in text.split("\n") if not re.match(r"\W", line) and line
     )
+
+    views_line_index = first_match_re(views_re, lines)
+
     for i, line in enumerate(lines[:]):
         matches = list(re.finditer(timestamp_re, line))
         if len(matches) > 1:
@@ -69,15 +104,14 @@ def parse_youtube_screenshot_text(text) -> ClipRequestData:
 
     matches = list(re.finditer(timestamp_re, text))
 
-    def first_match_re(regex):
-        return [i for i, line in enumerate(lines) if re.search(regex, line)][0]
-
     # TODO pythonmebro
     all_ts_indices = dict()
     for m in matches:
         indices = find_items_starting_with(m.group(), lines)
         for i in indices:
-            all_ts_indices[i] = m.group()
+            if i < views_line_index:
+                # The only relevant timestamps appear above the "views" count in YouTube
+                all_ts_indices[i] = m.group()
 
     save_keys = set()
     keys = list(all_ts_indices.keys())
@@ -88,36 +122,24 @@ def parse_youtube_screenshot_text(text) -> ClipRequestData:
             for k in window:
                 save_keys.add(k)
 
-    views_line_index = first_match_re(views_re)
-
     relevant_timestamps_indices = {key: all_ts_indices[key] for key in save_keys}
     relevant_timestamps = sorted(
         list(VideoTimestamp(ts).seconds for ts in relevant_timestamps_indices.values())
     )
 
+    print(relevant_timestamps_indices)
+    print(relevant_timestamps)
+
     if two_timestamps_attempt:
         start_seconds, end_seconds = relevant_timestamps[0:2]
-    else:
+    elif len(relevant_timestamps) >= 1:
         start_seconds = relevant_timestamps[0]
         end_seconds = None
+    else:
+        start_seconds, end_seconds = None, None
 
-    # I believe YouTube Titles are limited to two lines. This helps in parsing the screenshot
-    MAX_TITLE_LINES = 2
-    # In the below screenshot, you can see that YouTube sometimes shows the location of a video
-    # If it is shown, we need to ignore it, because it will throw off the YouTube URL search
-    # https://i.imgur.com/NgQ0VVi.png
-    POTENTIAL_LOCATION_OFFSET = 1
-    last_timestamp_index = max(relevant_timestamps_indices.keys())
-    youtube_title_range = slice(
-        max(
-            last_timestamp_index + POTENTIAL_LOCATION_OFFSET,
-            views_line_index - MAX_TITLE_LINES,
-        ),
-        views_line_index,
-    )
-
-    youtube_title = " ".join(lines[youtube_title_range])
-    url = youtube_url(youtube_title)
+    youtube_title_lines = extract_youtube_title_lines_from_screenshot_text(lines)
+    url = check_for_youtube_url(youtube_title_lines)
     return ClipRequestData(url, start_seconds, end_seconds)
 
 
@@ -179,7 +201,10 @@ def read_image(image_uri, skip_cache=False):
     if not skip_cache:
         text = check_cache(image_uri)
         if text:
+            print("cache hit")
             return text
+
+    print(text)
 
     from google.cloud import vision
     from google.cloud.vision import types
