@@ -1,3 +1,4 @@
+from pathlib import Path
 from urllib.parse import unquote
 
 import pika
@@ -9,6 +10,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 
 # from pyclipper.request_parser import ClipperTextMessageParser
 # from pyclipper.screenshot_metadata_parser import ScreenshotMetadataParser
+from pyclipper.clip.metadata import ClipMetadata
 from pyclipper.config import Config
 from pyclipper.request import ClipperServerRequestData
 
@@ -24,23 +26,52 @@ client = Client(c.account_sid, c.auth_token)
 @app.route("/")
 def index():
     return f"""
-        <p>Clipper</p>
-        <p>Send Us a text with :</p>
+        <!DOCTYPE html>
 
-        <ol>
-            <li>A YouTube URL</li>
-            <li>A start time</li>
-            <li>An end time</li>
-        </ol>
-        <p>We'll send you a text with a download link to that clip</p>
-        <a href="sms:+12029527509&body={c.demo_text}">Click here to text us!</a>
+        <head>
+            <style>
+                body {{
+                    font-size: 72px;
+                    padding: 16px;
+                }}
+            </style>
+        </head>
+
+        <body>
+            <p>Clipper</p>
+            <p>Send Us a text with :</p>
+    
+            <ol>
+                <li>A YouTube URL</li>
+                <li>A start time</li>
+                <li>An end time</li>
+            </ol>
+            <p>We'll send you a text with a download link to that clip</p>
+            <a class="button" href="sms:+12029527509&body={c.demo_text}">Click here to text us!</a>
+
+            <div>
+                <a href="https://dev.to/technoplato">Created by Michael Lustig</a>
+            </div>
+        </body>
+
+        </html>
     """
 
 
 @app.route("/clips/<clip>")
 def clip_download(clip):
+    p = Path(f"server/assets/clips/{clip}").resolve()
+    metadata = ClipMetadata.read_from_file_metadata(p)
+
+    print(p)
+    print(metadata)
+
     # TODO: open graph protocol https://ogp.me/
-    return send_file(f"assets/clips/{unquote(clip)}", as_attachment=True)
+    return send_file(
+        f"assets/clips/{clip}",
+        as_attachment=True,
+        attachment_filename=f"Clip of {metadata.title}.mp4",
+    )
 
 
 @app.route("/sms", methods=["GET", "POST"])
@@ -76,7 +107,9 @@ def queue_message(r: ClipperServerRequestData):
         exchange="",
         routing_key="task_queue",
         body=r.json,
-        properties=pika.BasicProperties(delivery_mode=2,),  # make message persistent
+        properties=pika.BasicProperties(
+            # delivery_mode=2,
+        ),  # make message persistent
     )
     print(" [x] Sent %r" % r)
     connection.close()
