@@ -1,5 +1,3 @@
-import dataclasses
-import json
 from urllib.parse import unquote
 
 import pika
@@ -9,9 +7,10 @@ from flask import send_file
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 
+# from pyclipper.request_parser import ClipperTextMessageParser
+# from pyclipper.screenshot_metadata_parser import ScreenshotMetadataParser
 from pyclipper.config import Config
-from pyclipper.request_parser import ClipperTextMessageParser
-from pyclipper.screenshot_metadata_parser import ScreenshotMetadataParser
+from pyclipper.request import ClipperServerRequestData
 
 c = Config()
 
@@ -41,49 +40,33 @@ def index():
 @app.route("/clips/<clip>")
 def clip_download(clip):
     # TODO: open graph protocol https://ogp.me/
-    return send_file(f"pyclipper/assets/clips/{unquote(clip)}", as_attachment=True)
+    return send_file(f"assets/clips/{unquote(clip)}", as_attachment=True)
 
 
 @app.route("/sms", methods=["GET", "POST"])
 def on_text_received():
     """Callback triggered upon receiving a text from a user of Clipper™."""
 
-    print("=" * 80)
-    print("text received ", "=" * (80 - len("text received")))
-    print("=" * 80)
-
     text = request.values.get("Body", None)
     from_number = request.values.get("From", None)
+    image_url = None
 
     if request.values["NumMedia"] != "0":
         image_url = request.values["MediaUrl0"]
 
-    # parsed = ScreenshotMetadataParser(image_url).parse()
-    # parsed = ClipperTextMessageParser(text_message).data
+    r = ClipperServerRequestData(phone=from_number, image_url=image_url, text=text)
 
-    print(from_number)
-    print(text)
-    print(image_url)
+    queue_message(r)
 
-    print(json.dumps(request))
-
-    return "good"
-
-    # msg = dataclasses.asdict(parsed)
-    # msg["phone"] = from_number
-    # print(msg)
-    #
-    # queue_message(msg)
-    #
-    # resp = MessagingResponse()
-    # resp.message(
-    #     "We've received your request and will text you your clip URL when it's ready!"
-    # )
-    # session[from_number] = {"processing": True}
-    # return str(resp)
+    resp = MessagingResponse()
+    resp.message(
+        "We've received your request and will text you your clip URL when it's ready!"
+    )
+    # # session[from_number] = {"processing": True}
+    return str(resp)
 
 
-def queue_message(msg):
+def queue_message(r: ClipperServerRequestData):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
     channel = connection.channel()
 
@@ -92,18 +75,21 @@ def queue_message(msg):
     channel.basic_publish(
         exchange="",
         routing_key="task_queue",
-        body=json.dumps(msg),
+        body=r.json,
         properties=pika.BasicProperties(delivery_mode=2,),  # make message persistent
     )
-    print(" [x] Sent %r" % msg)
+    print(" [x] Sent %r" % r)
     connection.close()
 
 
 @app.route(f"/{c.video_clip_complete_path}", methods=["POST"])
 def clip_ready_webhook():
+
     clip_ready_response = request.get_json()
 
-    # TODO: Make Class for Ready Response
+    secret = clip_ready_response.get("secret")
+    if secret != c.secret:
+        return "you dont belong here. I belong here. I inspired the Hopsins... goat 🐐"
     clip_url = clip_ready_response.get("clip_url")
     phone = clip_ready_response.get("phone")
 

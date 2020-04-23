@@ -1,4 +1,9 @@
+from utils import hms_to_seconds
+
+
 class VideoTimestamp:
+    """Represents a timestamp in the form dd:dd:dd, dd:dd or dd"""
+
     def __init__(self, stamp):
         self._raw = stamp.split(":")
         vals = list(map(int, self._raw))
@@ -13,8 +18,8 @@ class VideoTimestamp:
 
     @property
     def seconds(self):
-        return (
-            self._time_components[0] * 3600
-            + self._time_components[1] * 60
-            + self._time_components[2]
+        return hms_to_seconds(
+            self._time_components[0],
+            self._time_components[1],
+            self._time_components[2],
         )

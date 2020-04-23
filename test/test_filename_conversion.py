@@ -13,8 +13,8 @@ desired_clip_path = f"{clips_path_prefix}/Gordon Ramsay Cooks Buffalo For A Camb
 
 
 class TestFilenames(unittest.TestCase):
+    @unittest.skip
     def test_files_named_appropriately(self):
-        # pass
         download_and_trim("11-lpoJHu0U", 4, 284)
         self.assertTrue(os.path.exists(desired_full_video))
         self.assertTrue(os.path.exists(desired_clip_path))

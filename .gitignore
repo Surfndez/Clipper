@@ -1,5 +1,5 @@
 pyclipper/pyclipper.ini
-pyclipper/assets
+server/assets
 
 .env/
 env/
