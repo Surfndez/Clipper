@@ -35,11 +35,17 @@ LOOK HERE AND AUTOMATE THIS https://www.twilio.com/docs/twilio-cli/general-usage
     docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
     ```   
 
-5) Start Message Consumer 
+* Start Message Consumer 
     ```
+    export GOOGLE_APPLICATION_CREDENTIALS="/your/key/path/key.json"
     python -m worker.worker
     ```
-
+* Start Server
+    ```
+    export GOOGLE_APPLICATION_CREDENTIALS="/your/key/path/key.json"
+    python -m server.server
+    ```
+    
 #### External Dependencies
 
 * `nodemon` -  automatically restarting program when you make changes - https://nodemon.io/
