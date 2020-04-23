@@ -16,25 +16,29 @@
 LOOK HERE AND AUTOMATE THIS https://www.twilio.com/docs/twilio-cli/general-usage#webhooks
 * Create a Google Cloud Vision Enabled Project and Download `key.json`
 
-
-    export GOOGLE_APPLICATION_CREDENTIALS="/your/key/path/[FILE_NAME].json"
+    ```
+    export GOOGLE_APPLICATION_CREDENTIALS="/your/key/path/key.json"
+    ```
 
 * Install Dependencies 
     
-
+    ```
     virtualenv .env && source .env/bin/activate && pip install -r requirements.txt
+    ```
 
 * Add stuff to pyclipper.ini.sample
 
 * Change `pyclipper.ini.sample` to `pyclipper.ini` and fill in credentials
 
 * Start RabbitMQ Server
-
-
+    ```
     docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
-   
+    ```   
 
-5) Start Message Consumer `worker.py`
+5) Start Message Consumer 
+    ```
+    python -m worker.worker
+    ```
 
 #### External Dependencies
 
