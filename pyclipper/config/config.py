@@ -7,6 +7,7 @@ class Config:
         self.config.read("pyclipper/pyclipper.ini")
 
         twilio = self.config["twilio"]
+        discord = self.config["discord"]
         server = self.config["server"]
         files = self.config["files"]
         clips = self.config["clips"]
@@ -21,6 +22,8 @@ class Config:
         self._phone_number = twilio["phone_number"]
         self._my_phone_number = twilio["my_phone_number"]
         self._demo_text = twilio["demo_text"]
+
+        self._bot_token = discord["bot_token"]
 
         self._screenshot_mount_point = files["SCREENSHOT_MOUNT_POINT"]
 

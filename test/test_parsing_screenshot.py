@@ -1,12 +1,6 @@
 import unittest
-from dataclasses import asdict
 
-from dotmap import DotMap as d
-
-from pyclipper.clip.request import ClipRequestData
 from pyclipper.request.parser.screenshot.parser import (
-    parse_screenshot,
-    parse_youtube_screenshot_text,
     extract_youtube_title_lines_from_screenshot_text,
 )
 

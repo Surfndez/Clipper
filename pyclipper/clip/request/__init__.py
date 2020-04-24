@@ -1,1 +1,1 @@
-from .request import ClipRequestData
+from .request import ClipRequest

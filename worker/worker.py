@@ -1,11 +1,12 @@
 from dataclasses import astuple
 
 import pika
-import requests
 
 from pyclipper.config import Config
-from pyclipper.request import ClipperServerRequestData
+from pyclipper.dispatcher import dispatch_response
+from pyclipper.request import ClipperRequest
 from pyclipper.request.parser.parser import parse_incoming_clipper_text_request
+from pyclipper.request.response.response import ClipperResponse
 from pyclipper.ytdl import download_and_trim
 
 c = Config()
@@ -21,15 +22,21 @@ def callback(ch, method, properties, body):
     # print(body)
     # ch.basic_ack(delivery_tag=method.delivery_tag)
     # pass
-    r = ClipperServerRequestData(request_json=body.decode("utf-8"))
-    url, start_seconds, end_seconds, _ = astuple(parse_incoming_clipper_text_request(r))
+    request = ClipperRequest(request_json=body.decode("utf-8"))
+    try:
+        url, start_seconds, end_seconds, _ = astuple(
+            parse_incoming_clipper_text_request(request)
+        )
 
-    clip_url = download_and_trim(url, start_seconds, end_seconds)
+        clip_url = download_and_trim(url, start_seconds, end_seconds)
 
-    requests.post(
-        f"http://localhost:{c.flask_port}/{c.video_clip_complete_path}",
-        json={"clip_url": clip_url, "phone": r.phone, "secret": c.secret},
-    )
+        response = ClipperResponse(request, clip_url)
+        dispatch_response(response)
+    except:
+        error_message = "Something wen't wrong. I'll try and fix it but no promises since this is a Hackathon project :)"
+        response = ClipperResponse(request, error=error_message)
+        dispatch_response(response)
+
     ch.basic_ack(delivery_tag=method.delivery_tag)
     print(" [x] Done")
 

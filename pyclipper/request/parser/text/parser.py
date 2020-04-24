@@ -1,4 +1,4 @@
-from pyclipper.clip.request import ClipRequestData
+from pyclipper.clip.request import ClipRequest
 from utils import first_url, extract_two_timestamp_seconds
 
 
@@ -9,10 +9,10 @@ class RequestArgumentException(Exception):
         )
 
 
-def parse_text(text: str) -> ClipRequestData:
+def parse_text(text: str) -> ClipRequest:
     if text is None:
-        return ClipRequestData()
+        return ClipRequest()
     video_url = first_url(text)
     t1, t2 = extract_two_timestamp_seconds(text)
     start, end = (t1, t2)
-    return ClipRequestData(video_url, start, end)
+    return ClipRequest(video_url, start, end)

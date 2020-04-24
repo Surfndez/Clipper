@@ -5,7 +5,7 @@ import requests
 from fuzzywuzzy import process, fuzz
 from google.protobuf.json_format import MessageToJson
 
-from pyclipper.clip.request import ClipRequestData
+from pyclipper.clip.request import ClipRequest
 from pyclipper.config import Config
 from pyclipper.timestamp import VideoTimestamp
 from utils import find_items_starting_with, consecutive, cheat_youtube_url_lookup
@@ -76,7 +76,7 @@ def extract_youtube_title_lines_from_screenshot_text(screenshot_text_lines):
     return youtube_title_lines
 
 
-def parse_youtube_screenshot_text(text) -> ClipRequestData:
+def parse_youtube_screenshot_text(text) -> ClipRequest:
     # [YOUTUBE]
     # this text is present in the screenshot if the user is holding the seekbar
     # and therefore indicates they are attempting to send start and end time
@@ -140,7 +140,7 @@ def parse_youtube_screenshot_text(text) -> ClipRequestData:
 
     youtube_title_lines = extract_youtube_title_lines_from_screenshot_text(lines)
     url = check_for_youtube_url(youtube_title_lines)
-    return ClipRequestData(url, start_seconds, end_seconds)
+    return ClipRequest(url, start_seconds, end_seconds)
 
 
 def create_cache_path(image_uri):
@@ -204,8 +204,6 @@ def read_image(image_uri, skip_cache=False):
             print("cache hit")
             return text
 
-    print(text)
-
     from google.cloud import vision
     from google.cloud.vision import types
 
@@ -227,8 +225,8 @@ def read_image(image_uri, skip_cache=False):
     return response.full_text_annotation.text
 
 
-def parse_screenshot(image) -> ClipRequestData:
+def parse_screenshot(image) -> ClipRequest:
     if image is None:
-        return ClipRequestData()
+        return ClipRequest()
     text = read_image(image)
     return parse_youtube_screenshot_text(text)

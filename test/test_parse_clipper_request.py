@@ -1,9 +1,9 @@
 import unittest
 from dataclasses import asdict
 
-from pyclipper.clip.request import ClipRequestData
+from pyclipper.clip.request import ClipRequest
 from pyclipper.config import Config
-from pyclipper.request import ClipperServerRequestData
+from pyclipper.request import ClipperRequest
 from pyclipper.request.parser.parser import parse_incoming_clipper_text_request
 
 
@@ -21,11 +21,11 @@ class TestClipperServerRequests(unittest.TestCase):
         three_timestamp_t1_seconds = 13092
         three_timestamp_t2_seconds = 16364
 
-        request = ClipperServerRequestData(
+        request = ClipperRequest(
             "phone", three_timestamp_screenshot, three_timestamp_text
         )
 
-        expected = ClipRequestData(
+        expected = ClipRequest(
             three_timestamp_url, three_timestamp_t1_seconds, three_timestamp_t2_seconds,
         )
 
@@ -43,11 +43,11 @@ class TestClipperServerRequests(unittest.TestCase):
         three_timestamp_t1_seconds = 13092
         three_timestamp_t2_seconds = 16364
 
-        request = ClipperServerRequestData(
+        request = ClipperRequest(
             "phone", three_timestamp_screenshot, three_timestamp_text
         )
 
-        expected = ClipRequestData(
+        expected = ClipRequest(
             three_timestamp_url, three_timestamp_t1_seconds, three_timestamp_t2_seconds,
         )
 
@@ -65,11 +65,9 @@ class TestClipperServerRequests(unittest.TestCase):
         two_timestamp_t1_seconds = 134
         two_timestamp_t2_seconds = 174
 
-        request = ClipperServerRequestData(
-            "phone", two_timestamp_screenshot, two_timestamp_text
-        )
+        request = ClipperRequest("phone", two_timestamp_screenshot, two_timestamp_text)
 
-        expected = ClipRequestData(
+        expected = ClipRequest(
             two_timestamp_url, two_timestamp_t1_seconds, two_timestamp_t2_seconds,
         )
 
@@ -88,11 +86,9 @@ class TestClipperServerRequests(unittest.TestCase):
         two_timestamp_t1_seconds = 134
         two_timestamp_t2_seconds = 144
 
-        request = ClipperServerRequestData(
-            "phone", two_timestamp_screenshot, two_timestamp_text
-        )
+        request = ClipperRequest("phone", two_timestamp_screenshot, two_timestamp_text)
 
-        expected = ClipRequestData(
+        expected = ClipRequest(
             two_timestamp_url, two_timestamp_t1_seconds, two_timestamp_t2_seconds,
         )
 
@@ -111,11 +107,9 @@ class TestClipperServerRequests(unittest.TestCase):
         no_timestamp_t1_seconds = 0
         no_timestamp_t2_seconds = c.default_clip_length
 
-        request = ClipperServerRequestData(
-            "phone", no_timestamp_screenshot, no_timestamp_text
-        )
+        request = ClipperRequest("phone", no_timestamp_screenshot, no_timestamp_text)
 
-        expected = ClipRequestData(
+        expected = ClipRequest(
             no_timestamp_url, no_timestamp_t1_seconds, no_timestamp_t2_seconds,
         )
 

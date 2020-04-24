@@ -1,5 +1,5 @@
-from pyclipper.clip.request import ClipRequestData
-from pyclipper.request import ClipperServerRequestData
+from pyclipper.clip.request import ClipRequest
+from pyclipper.request import ClipperRequest
 from .screenshot.parser import parse_screenshot
 from .text.parser import parse_text
 from ...config import Config
@@ -50,16 +50,14 @@ def determine_timestamps(image_request, text_request):
     return start, end
 
 
-def merge_requests(image_request, text_request) -> ClipRequestData:
+def merge_requests(image_request, text_request) -> ClipRequest:
     url = extract_url(image_request, text_request)
     start, end = determine_timestamps(image_request, text_request)
 
-    return ClipRequestData(url, start, end)
+    return ClipRequest(url, start, end)
 
 
-def parse_incoming_clipper_text_request(
-    request: ClipperServerRequestData,
-) -> ClipRequestData:
+def parse_incoming_clipper_text_request(request: ClipperRequest) -> ClipRequest:
     image = request.image_url
     text = request.text
 

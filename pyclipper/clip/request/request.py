@@ -4,7 +4,7 @@ from pyclipper.config import ScreenshotSupportedService
 
 
 @dataclass
-class ClipRequestData:
+class ClipRequest:
     """Data specifying a clip from a video."""
 
     url: str = None

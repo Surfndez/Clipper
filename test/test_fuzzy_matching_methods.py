@@ -1,7 +1,5 @@
 import unittest
 
-from pyclipper.request import ClipperServerRequestData
-
 from fuzzywuzzy import process, fuzz
 
 
