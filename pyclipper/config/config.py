@@ -14,7 +14,6 @@ class Config:
 
         self._base_url = server["base_url"]
         self._flask_port = server.getint("flask_port")
-        self._video_clip_complete_path = server["video_clip_complete_path"]
         self._secret = server["secret"]
 
         self._account_sid = twilio["account_sid"]
@@ -26,6 +25,9 @@ class Config:
         self._bot_token = discord["bot_token"]
 
         self._screenshot_mount_point = files["SCREENSHOT_MOUNT_POINT"]
+        self._full_video_mount_point = files["FULL_VIDEOS_MOUNT_POINT"]
+        self._clips_mount_point = files["CLIPS_VIDEOS_MOUNT_POINT"]
+        self._video_name_template = files["FULL_VIDEO_NAME_TEMPLATE"]
 
         self._DEFAULT_CLIP_LENGTH = clips["DEFAULT_CLIP_LENGTH"]
 
@@ -36,14 +38,6 @@ class Config:
     @property
     def flask_port(self):
         return self._flask_port
-
-    @property
-    def video_clip_complete_path(self):
-        return self._video_clip_complete_path
-
-    @property
-    def secret(self):
-        return self._secret
 
     @property
     def account_sid(self):
@@ -68,6 +62,18 @@ class Config:
     @property
     def screenshot_mount_point(self):
         return self._screenshot_mount_point
+
+    @property
+    def full_video_mount_point(self):
+        return self._full_video_mount_point
+
+    @property
+    def clips_mount_point(self):
+        return self._clips_mount_point
+
+    @property
+    def video_name_template(self):
+        return self._video_name_template
 
     @property
     def default_clip_length(self):

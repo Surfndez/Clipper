@@ -1,12 +1,11 @@
 [server]
 base_url =
-flask_port = 5000
-video_clip_complete_path = protectme
-secret =
+flask_port =
 
 [twilio]
 account_sid =
 auth_token =
+api_key =
 phone_number =
 my_phone_number =
 demo_url = https://www.youtube.com/watch?v=LYB00pdOnEc
@@ -14,8 +13,18 @@ demo_start = 2:32
 demo_end = 5:14
 demo_text = %(demo_url)s %(demo_start)s %(demo_end)s
 
+[discord]
+bot_token =
+
 [files]
-SCREENSHOT_MOUNT_POINT =
+MOUNT_POINT = /usr/share/clipper/data
+SCREENSHOT_MOUNT_POINT = %(MOUNT_POINT)s/screenshots
+VIDEOS_MOUNT_POINT = %(MOUNT_POINT)s/videos
+FULL_VIDEOS_MOUNT_POINT = %(VIDEOS_MOUNT_POINT)s/full
+CLIPS_VIDEOS_MOUNT_POINT = %(VIDEOS_MOUNT_POINT)s/clips
+FULL_VIDEO_NAME_TEMPLATE = "%(FULL_VIDEOS_MOUNT_POINT)s/%%(id)s.%%(ext)s"
+
 
 [clips]
-DEFAULT_CLIP_LENGTH = 10
+DEFAULT_CLIP_LENGTH = 30
+

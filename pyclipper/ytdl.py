@@ -1,5 +1,4 @@
 import os
-from urllib.parse import quote
 
 import ffmpeg
 import youtube_dl
@@ -25,10 +24,8 @@ def download_and_trim(video_url, start, end=None):
     if not isinstance(video_url, str):
         return
 
-    # TODO move to config
-    videos = "server/assets"
-    full_video_path = f"{videos}/full"
-    clips_path = f"{videos}/clips"
+    full_video_path = c.full_video_mount_point
+    clips_path = c.clips_mount_point
 
     if not os.path.exists(full_video_path):
         os.mkdir(full_video_path)
@@ -37,15 +34,13 @@ def download_and_trim(video_url, start, end=None):
 
     extension = ".mp4"
 
-    template = "server/assets/full/%(id)s.%(ext)s"
-
-    ydl_opts = {"outtmpl": template, "format": "mp4"}
+    ydl_opts = {"outtmpl": c.video_name_template, "format": "mp4"}
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(video_url, download=False)
-        title = info["title"]
 
         # YouTube relevant
+        title = info["title"]
         uploader = info.get("uploader")
         channel_id = info.get("channel_id")
 
@@ -58,7 +53,7 @@ def download_and_trim(video_url, start, end=None):
         print("video_url:\t\t", video_url)
         print("channel url:\t\t", youtube_channel_template(channel_id))
 
-        # YouTube None
+        # YouTube not relevant
         print("creator:\t\t", creator)
         print("channel:\t\t", channel)
 

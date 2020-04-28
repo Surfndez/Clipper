@@ -94,9 +94,5 @@ def twilio_webhook():
     )
 
 
-def start_server():
-    app.run(port=c.flask_port)
-
-
 if __name__ == "__main__":
     app.run(port=c.flask_port)
