@@ -1,4 +1,4 @@
-from utils import hms_to_seconds
+from pyclipper.utils import hms_to_seconds
 
 
 class VideoTimestamp:

@@ -1,5 +1,5 @@
 from pyclipper.clip.request import ClipRequest
-from utils import first_url, extract_two_timestamp_seconds
+from pyclipper.utils import first_url, extract_two_timestamp_seconds
 
 
 class RequestArgumentException(Exception):

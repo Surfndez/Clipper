@@ -1,4 +1,4 @@
 {
-    "python.pythonPath": "env/bin/python3",
+    "python.pythonPath": "/Users/lustig/Development/projects/hackathons/Clipper/env/bin/python3.7",
     "editor.formatOnSave": true
 }

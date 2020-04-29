@@ -14,7 +14,6 @@ class Config:
 
         self._base_url = server["base_url"]
         self._flask_port = server.getint("flask_port")
-        self._secret = server["secret"]
 
         self._account_sid = twilio["account_sid"]
         self._auth_token = twilio["auth_token"]

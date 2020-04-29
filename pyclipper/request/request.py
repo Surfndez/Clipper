@@ -23,9 +23,14 @@ class ClipperRequest:
         text: str = None,
         request_json=None,
     ):
+        print(request_type)
+        print(response_destination)
+        print(image_url)
+        print(text)
+        print(request_json)
         if request_json is not None:
             self.__dict__ = json.loads(request_json)
-        elif not request_type or not response_destination:
+        elif request_type == None or response_destination == None:
             raise Exception("I need these to respond to the request")
         else:
             self.request_type = request_type

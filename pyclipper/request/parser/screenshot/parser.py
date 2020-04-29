@@ -1,3 +1,4 @@
+from pprint import pprint as p
 import os
 import re
 
@@ -8,7 +9,7 @@ from google.protobuf.json_format import MessageToJson
 from pyclipper.clip.request import ClipRequest
 from pyclipper.config import Config
 from pyclipper.timestamp import VideoTimestamp
-from utils import find_items_starting_with, consecutive, cheat_youtube_url_lookup
+from pyclipper.utils import find_items_starting_with, consecutive, cheat_youtube_url_lookup
 
 
 def check_for_youtube_url(title_lines):
@@ -54,9 +55,6 @@ def youtube_url(title):
         return None
 
     return url
-
-
-from pprint import pprint as p
 
 
 def first_match_re(regex, lines):
@@ -117,12 +115,13 @@ def parse_youtube_screenshot_text(text) -> ClipRequest:
     keys = list(all_ts_indices.keys())
     window_size = 3 if two_timestamps_attempt else 2
     for i in range(len(keys) - window_size + 1):
-        window = keys[i : i + window_size]
+        window = keys[i: i + window_size]
         if consecutive(window):
             for k in window:
                 save_keys.add(k)
 
-    relevant_timestamps_indices = {key: all_ts_indices[key] for key in save_keys}
+    relevant_timestamps_indices = {
+        key: all_ts_indices[key] for key in save_keys}
     relevant_timestamps = sorted(
         list(VideoTimestamp(ts).seconds for ts in relevant_timestamps_indices.values())
     )
@@ -138,7 +137,8 @@ def parse_youtube_screenshot_text(text) -> ClipRequest:
     else:
         start_seconds, end_seconds = None, None
 
-    youtube_title_lines = extract_youtube_title_lines_from_screenshot_text(lines)
+    youtube_title_lines = extract_youtube_title_lines_from_screenshot_text(
+        lines)
     url = check_for_youtube_url(youtube_title_lines)
     return ClipRequest(url, start_seconds, end_seconds)
 

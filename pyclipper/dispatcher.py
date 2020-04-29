@@ -3,7 +3,7 @@ import pika
 from pyclipper.request import ClipperRequest
 from pyclipper.request.request_type import RequestType
 from pyclipper.request.response.response import ClipperResponse
-from texting.texting import send_text
+from pyclipper.texting.texting import send_text
 
 
 def format_response(clip_url):
@@ -17,7 +17,8 @@ def format_response(clip_url):
 
 
 def dispatch_request(reqeust: ClipperRequest):
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host="rabbit"))
     channel = connection.channel()
 
     channel.queue_declare(queue="task_queue", durable=True)
