@@ -59,10 +59,11 @@ async def dispatch_discord_response(r: ClipperResponse):
         await send_message(format_response(r.clip_url), channel)
 
 
-async def dispatch_response(r: ClipperResponse):
+def dispatch_response(r: ClipperResponse):
     t = r.request.request_type
     if t == RequestType.phone:
         dispatch_phone_response(r)
 
-    elif t == RequestType.discord:
-        await dispatch_discord_response(r)
+    # TODO figure out how to have a async callback in RabbitMQ
+    # elif t == RequestType.discord:
+    #     await dispatch_discord_response(r)

@@ -30,6 +30,9 @@ def download_and_trim(video_url, start, end=None):
     full_video_path = c.full_video_mount_point
     clips_path = c.clips_mount_point
 
+    log.info("Full video path: " + full_video_path)
+    log.info("Clips path: " + clips_path)
+
     if not os.path.exists(full_video_path):
         os.makedirs(full_video_path)
     if not os.path.exists(clips_path):
@@ -57,32 +60,37 @@ def download_and_trim(video_url, start, end=None):
         log.debug(f"channel url:\t\t{youtube_channel_template(channel_id)}")
 
         # YouTube not relevant
-        log.debug("creator:\t\t{creator}")
-        log.debug("channel:\t\t{channel}")
+        log.debug(f"creator:\t\t{creator}")
+        log.debug(f"channel:\t\t{channel}")
 
         video_id = info["id"]
         ext = info["ext"]
 
         video = f"{full_video_path}/{video_id}.{ext}"
-        clip_name = f"{video_id}-s{start}-e{end}{extension}"
-        clip_path = os.path.join(clips_path, clip_name)
+        filesystem_clip_name = f"{video_id}-s{start}-e{end}"
+        url_clip_name_params = f"video_id={video_id}&start={start}&end={end}"
+        clip_path = os.path.join(clips_path, filesystem_clip_name)
 
         if not os.path.exists(video):
             ydl.download([video_url])
 
     if not os.path.exists(clip_path):
         "ffmpeg " "-i iXwfBJYCTc4.mp4 " "-ss 4 " "-to 2:44 " "-c:v copy " "-c:a copy" " clip.mp4"
-        ffmpeg.input(video, ss=start, to=end).output(
+        stream = ffmpeg.input(video, ss=start, to=end).output(
             clip_path,
             vcodec="copy",
             acodec="copy"
             # , hide_banner=True, loglevel="panic"
-        ).run()
+        )
+
+        log.info(ffmpeg.get_args(stream))
+
+        stream.run()
 
         metadata = ClipMetadata(
             title, uploader, video_url, youtube_channel_template(channel_id)
         )
 
-        metadata.write_to_file_metadata(clip_path)
+        metadata.write_to_file_metadata(video_id)
 
-    return urljoin(c.base_url, f"clips/{clip_name}")
+    return urljoin(c.base_url, f"clips?{url_clip_name_params}")

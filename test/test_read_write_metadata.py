@@ -22,7 +22,7 @@ class TestMetadata(TestCase):
         attributes = xattr(filename)
         attributes.set(key, value.encode("utf-8"))
 
-        m = ClipMetadata.read_from_file_metadata(filename)
+        m = ClipMetadata().read_from_file_metadata(filename)
 
         self.assertEqual(m.title, value)
 
