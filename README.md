@@ -10,7 +10,7 @@
 
 #### Twilio
 1) [Create a new Twilio Account](https://www.twilio.com/try-twilio?promo=Gbv52f) **(DISCLAIMER: this is my referral link)**
-2) Navigate to your [Twilio Console](https://www.twilio.com/console) and copy your `ACCOUNT SID` and `AUTH TOKEN` into `pyclipper/pyclipper.ini.sample`
+2) Navigate to your [Twilio Console](https://www.twilio.com/console) and copy your `ACCOUNT SID` and `AUTH TOKEN` into the same `.env` file from above.
 3) Buy a Twilio phone number and copy it to your `pyclipper/pyclipper.ini.sample` file.  
 
 **Finally, change the name of the `pyclipper.ini.sample` to `pyclipper.ini`**
@@ -23,7 +23,6 @@
 
 * `docker` - easily deploy and run applications
 * `nodemon` -  automatically restarting program when you make changes - https://nodemon.io/
-* `ngrok` - exposing localhost to all of your friends (and enemies) - https://dashboard.ngrok.com/get-started
 
 
 
@@ -32,7 +31,9 @@
 # TODO
 * ~~Get google application credentials into environemnt where its needed. I need to figure out docker for this~~
 
-* Automate `ngrok` and `twilio` webhook configuration
+* ~~Automate `ngrok` and `twilio` webhook configuration~~
+
+* Install twilio cli into Docker Image
 
 * Complete README
 

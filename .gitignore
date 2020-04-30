@@ -1,8 +1,8 @@
 pyclipper/pyclipper.ini
-server/assets
 **.pyc
 __pycache__
-.env/
 env/
+.env
 .idea/
 .DS_Store
+pyclipper.log

@@ -1,79 +1,43 @@
+import os
 import configparser
 
 
-class Config:
-    def __init__(self):
-        self.config = configparser.ConfigParser()
-        self.config.read("pyclipper/pyclipper.ini")
+config = configparser.ConfigParser()
+config.read("pyclipper/pyclipper.ini")
 
-        twilio = self.config["twilio"]
-        discord = self.config["discord"]
-        server = self.config["server"]
-        files = self.config["files"]
-        clips = self.config["clips"]
+twilio = config["twilio"]
+discord = config["discord"]
+server = config["server"]
+files = config["files"]
+clips = config["clips"]
+ngrok = config["ngrok"]
 
-        self._base_url = server["base_url"]
-        self._flask_port = server.getint("flask_port")
+base_url = server["base_url"]
 
-        self._account_sid = twilio["account_sid"]
-        self._auth_token = twilio["auth_token"]
-        self._phone_number = twilio["phone_number"]
-        self._my_phone_number = twilio["my_phone_number"]
-        self._demo_text = twilio["demo_text"]
 
-        self._bot_token = discord["bot_token"]
+def set_base_url(url):
+    global base_url
+    base_url = url
 
-        self._screenshot_mount_point = files["SCREENSHOT_MOUNT_POINT"]
-        self._full_video_mount_point = files["FULL_VIDEOS_MOUNT_POINT"]
-        self._clips_mount_point = files["CLIPS_VIDEOS_MOUNT_POINT"]
-        self._video_name_template = files["FULL_VIDEO_NAME_TEMPLATE"]
 
-        self._DEFAULT_CLIP_LENGTH = clips["DEFAULT_CLIP_LENGTH"]
+flask_port = server.getint("flask_port")
 
-    @property
-    def base_url(self):
-        return self._base_url
 
-    @property
-    def flask_port(self):
-        return self._flask_port
+twilio_account_sid = os.environ["TWILIO_ACCOUNT_SID"]
+twilio_auth_token = os.environ["TWILIO_AUTH_TOKEN"]
 
-    @property
-    def account_sid(self):
-        return self._account_sid
+twilio_phone_number = twilio["phone_number"]
+my_phone_number = twilio["my_phone_number"]
+demo_text = twilio["demo_text"]
 
-    @property
-    def auth_token(self):
-        return self._auth_token
+bot_token = discord["bot_token"]
 
-    @property
-    def twilio_phone_number(self):
-        return self._phone_number
+screenshot_mount_point = files["SCREENSHOT_MOUNT_POINT"]
+full_video_mount_point = files["FULL_VIDEOS_MOUNT_POINT"]
+clips_mount_point = files["CLIPS_VIDEOS_MOUNT_POINT"]
+video_name_template = files["FULL_VIDEO_NAME_TEMPLATE"]
 
-    @property
-    def my_phone_number(self):
-        return self._my_phone_number
+default_clip_length = clips["DEFAULT_CLIP_LENGTH"]
 
-    @property
-    def demo_text(self):
-        return self._demo_text
-
-    @property
-    def screenshot_mount_point(self):
-        return self._screenshot_mount_point
-
-    @property
-    def full_video_mount_point(self):
-        return self._full_video_mount_point
-
-    @property
-    def clips_mount_point(self):
-        return self._clips_mount_point
-
-    @property
-    def video_name_template(self):
-        return self._video_name_template
-
-    @property
-    def default_clip_length(self):
-        return int(self._DEFAULT_CLIP_LENGTH)
+ngrok_auth = ngrok["ngrok_auth"]
+ngrok_subdomain = ngrok["ngrok_subdomain"]

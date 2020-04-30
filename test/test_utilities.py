@@ -1,6 +1,10 @@
 import unittest
 
-from utils import find_items_starting_with, first_url, extract_two_timestamp_seconds
+from pyclipper.utils import (
+    find_items_starting_with,
+    first_url,
+    extract_two_timestamp_seconds,
+)
 
 
 class TestUtilities(unittest.TestCase):

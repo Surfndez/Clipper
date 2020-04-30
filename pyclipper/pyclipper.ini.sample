@@ -3,9 +3,6 @@ base_url =
 flask_port =
 
 [twilio]
-account_sid =
-auth_token =
-api_key =
 phone_number =
 my_phone_number =
 demo_url = https://www.youtube.com/watch?v=LYB00pdOnEc

@@ -2,7 +2,7 @@ import unittest
 from dataclasses import asdict
 
 from pyclipper.clip.request import ClipRequest
-from pyclipper.config import Config
+from pyclipper.config.config import default_clip_length
 from pyclipper.request import ClipperRequest
 from pyclipper.request.parser.parser import parse_incoming_clipper_text_request
 
@@ -100,12 +100,11 @@ class TestClipperServerRequests(unittest.TestCase):
 
     def test_image_with_no_timestamps_defaults_to_0_to_10_seconds(self):
         # arrange
-        c = Config()
         no_timestamp_screenshot = "https://i.imgur.com/3i85i3a.png"
         no_timestamp_url = "https://www.youtube.com/watch?v=8mBmZDF23Lc"
         no_timestamp_text = None
         no_timestamp_t1_seconds = 0
-        no_timestamp_t2_seconds = c.default_clip_length
+        no_timestamp_t2_seconds = default_clip_length
 
         request = ClipperRequest("phone", no_timestamp_screenshot, no_timestamp_text)
 

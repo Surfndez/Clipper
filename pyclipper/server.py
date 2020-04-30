@@ -5,14 +5,17 @@ from flask import request
 from flask import send_file
 from twilio.twiml.messaging_response import MessagingResponse
 
-from pyclipper.config import Config
+from pyclipper.config.config import (
+    default_clip_length,
+    demo_text,
+    twilio_phone_number,
+    flask_port,
+)
 from pyclipper.db import ClipperDb
 from pyclipper.dispatcher import dispatch_request
 from pyclipper.request import ClipperRequest
 from pyclipper.request.request_type import RequestType
 from pyclipper.utils import build_clip_file_path
-
-c = Config()
 
 SECRET_KEY = "a secret key"
 app = Flask(__name__, static_folder="assets")
@@ -31,7 +34,7 @@ def index():
         <head>
             <style>
                 body {{
-                    font-size: 72px;
+                    font-size: 48px;
                     padding: 16px;
                 }}
             </style>
@@ -42,15 +45,20 @@ def index():
             <p>Send Us a text with :</p>
     
             <ol>
-                <li>A YouTube URL</li>
-                <li>A start time</li>
-                <li>An end time</li>
+                <li>A Video URL</li>
+                <li>A(n) (optional) start time (defaults to beginning of video)</li>
+                <li>A(n) (optional) end time (defaults to {default_clip_length} after start time)</li>
             </ol>
+
+            <p>You can also send us a screenshot of a YouTube video in vertical orientation.</p>
+
             <p>We'll send you a text with a download link to that clip</p>
-            <a class="button" href="sms:+12029527509&body={c.demo_text}">Click here to text us!</a>
+            <a href="sms:{twilio_phone_number}&body={demo_text}">Click here to text us!</a>
 
             <div>
-                <a href="https://dev.to/technoplato">Created by Michael Lustig</a>
+                <a href="https://dev.to/technoplato">Created by Michael Lustig</a> | 
+                <a href="https://twitter.com/technoplato">twitter</a> | 
+                <a href="https://github.com/technoplato">github</a> 
             </div>
         </body>
 
@@ -110,7 +118,7 @@ def twilio_webhook():
 
 
 def start_server():
-    app.run(host="0.0.0.0", port=c.flask_port)
+    app.run(host="0.0.0.0", port=flask_port)
 
 
 if __name__ == "__main__":

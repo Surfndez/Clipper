@@ -1,13 +1,14 @@
 from twilio.rest import Client
 
-from pyclipper.config import Config
+from pyclipper.config.config import twilio_account_sid, twilio_auth_token
 
-c = Config()
-client = Client(c.account_sid, c.auth_token)
+client = Client(twilio_account_sid, twilio_auth_token)
 
 
 def send_text(body, to):
-    message = client.messages.create(body=body, from_=c.twilio_phone_number, to=to,)
+    client.messages.create(
+        body=body, from_=c.twilio_phone_number, to=to,
+    )
 
 
 def lookup(number):

@@ -5,11 +5,16 @@ import ffmpeg
 import youtube_dl
 from requests.compat import urljoin
 
-from pyclipper.config import Config
+from pyclipper.config.config import (
+    base_url,
+    default_clip_length,
+    full_video_mount_point,
+    clips_mount_point,
+    video_name_template,
+)
 from pyclipper.db import ClipperDb
 from pyclipper.utils import build_clip_file_path
 
-c = Config()
 db = ClipperDb()
 
 log = logging.getLogger(__name__)
@@ -21,7 +26,7 @@ def youtube_channel_template(id):
 
 def download_and_trim(video_url, start, end=None):
     if end is None:
-        end = start + c.default_clip_length
+        end = start + default_clip_length
 
     if end < start:
         start, end = end, start
@@ -29,8 +34,8 @@ def download_and_trim(video_url, start, end=None):
     if not isinstance(video_url, str):
         return
 
-    full_video_path = c.full_video_mount_point
-    clips_path = c.clips_mount_point
+    full_video_path = full_video_mount_point
+    clips_path = clips_mount_point
 
     log.info("Full video path: " + full_video_path)
     log.info("Clips path: " + clips_path)
@@ -40,7 +45,7 @@ def download_and_trim(video_url, start, end=None):
     if not os.path.exists(clips_path):
         os.makedirs(clips_path)
 
-    ydl_opts = {"outtmpl": c.video_name_template, "format": "mp4"}
+    ydl_opts = {"outtmpl": video_name_template, "format": "mp4"}
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(video_url, download=False)
@@ -90,4 +95,4 @@ def download_and_trim(video_url, start, end=None):
             video_id, title, video_url, youtube_channel_template(channel_id)
         )
 
-    return urljoin(c.base_url, f"clips?{url_clip_name_params}")
+    return urljoin(base_url, f"clips?{url_clip_name_params}")
