@@ -1,7 +1,7 @@
-from dataclasses import dataclass, asdict
-from pathlib import Path
+import os
+from dataclasses import dataclass
 
-from xattr import xattr
+from pyclipper.db import ClipperDb
 
 
 @dataclass
@@ -13,24 +13,19 @@ class ClipMetadata:
     original_video_url: str = None
     original_channel_url: str = None
 
+    db = ClipperDb()
+
     def write_to_file_metadata(self, filepath):
-        filepath = Path(filepath).resolve()
-        metadata = xattr(filepath)
-        for k, v in asdict(self).items():
-            if v:
-                b = v if isinstance(v, bytes) else v.encode("utf-8")
-                metadata.set(k, b)
+        video_id = os.path.basename(filepath)
+        self.db.save_video_info(
+            video_id, self.title, self.original_video_url, self.original_channel_url
+        )
 
-    @staticmethod
-    def read_from_file_metadata(filepath):
-        filepath = Path(filepath).resolve()
-        attributes = xattr(filepath)
-        metadata = ClipMetadata()
-
-        for k in asdict(metadata).keys():
-            try:
-                setattr(metadata, k, attributes.get(k).decode())
-            except IOError:
-                pass
-
-        return metadata
+    def read_from_file_metadata(self, filepath):
+        video_id = os.path.basename(filepath)
+        (
+            _,
+            self.title,
+            self.original_video_url,
+            self.original_channel_url,
+        ) = self.db.get_video_info(video_id)

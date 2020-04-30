@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import logging
 
 from flask import Flask
@@ -57,14 +58,19 @@ def index():
     """
 
 
-@app.route("/clips/<clip>")
-def clip_download(clip):
-    p = Path(f"server/assets/clips/{clip}").resolve()
-    metadata = ClipMetadata.read_from_file_metadata(p)
+@app.route("/clips")
+def clip_download():
+
+    video_id = request.values.get("video_id", None)
+    start = request.values.get("start", None)
+    end = request.values.get("end", None)
+
+    metadata = ClipMetadata().read_from_file_metadata(video_id)
+    clip_path = os.path.join(c.clips_mount_point, f"{video_id}-s{start}-e{end}.mp4")
 
     # TODO: open graph protocol https://ogp.me/
     return send_file(
-        f"assets/clips/{clip}",
+        clip_path,
         as_attachment=True,
         attachment_filename=f"Clip of {metadata.title}.mp4",
     )

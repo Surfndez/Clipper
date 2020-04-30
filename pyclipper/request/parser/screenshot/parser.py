@@ -27,7 +27,7 @@ def check_for_youtube_url(title_lines):
     # if the search did not work for both lines, we could have noise in the title
     # such as hashtags, location, etc. Try searching for just the second line,
     # which for YouTube videos will be directly above the watch count.
-    if not url and len(title_lines) == 2:
+    if url is None and len(title_lines) == 2:
         url = youtube_url(title_lines[1])
     return url
 
@@ -57,12 +57,14 @@ def youtube_url(title):
     match_dict = {u[1]: u[0] for u in urls}
     log.debug(match_dict)
     log.debug(title)
-    (expected_title, score, url) = process.extractOne(title, match_dict)
+    # (expected_title, score, url) = process.extractOne(title, match_dict)
+    result = process.extractOne(title, match_dict)
+    log.debug(result)
 
-    if score < 95:
+    if result is None or result[1] < 95:
         return None
 
-    return url
+    return result[2]
 
 
 def first_match_re(regex, lines):
@@ -123,13 +125,12 @@ def parse_youtube_screenshot_text(text) -> ClipRequest:
     keys = list(all_ts_indices.keys())
     window_size = 3 if two_timestamps_attempt else 2
     for i in range(len(keys) - window_size + 1):
-        window = keys[i: i + window_size]
+        window = keys[i : i + window_size]
         if consecutive(window):
             for k in window:
                 save_keys.add(k)
 
-    relevant_timestamps_indices = {
-        key: all_ts_indices[key] for key in save_keys}
+    relevant_timestamps_indices = {key: all_ts_indices[key] for key in save_keys}
     relevant_timestamps = sorted(
         list(VideoTimestamp(ts).seconds for ts in relevant_timestamps_indices.values())
     )
@@ -142,8 +143,7 @@ def parse_youtube_screenshot_text(text) -> ClipRequest:
     else:
         start_seconds, end_seconds = None, None
 
-    youtube_title_lines = extract_youtube_title_lines_from_screenshot_text(
-        lines)
+    youtube_title_lines = extract_youtube_title_lines_from_screenshot_text(lines)
     url = check_for_youtube_url(youtube_title_lines)
     return ClipRequest(url, start_seconds, end_seconds)
 

@@ -26,9 +26,15 @@ class ClipperRequest:
         text: str = None,
         request_json=None,
     ):
-        params = (request_type, response_destination, image_url, text, request_json)
-        line_items = "\n".join((f"\t{i}" for i in params))
-        log.debug(f"Clipper request initialized with:\n{line_items}")
+
+        log.debug(
+            f"Clipper request initialized with:\n"
+            f"request_type:         {request_type}"
+            f"response_destination: {response_destination}"
+            f"image_url:            {image_url}"
+            f"text:                 {text}"
+            f"request_json:         {request_json}"
+        )
 
         if request_json is not None:
             self.__dict__ = json.loads(request_json)
