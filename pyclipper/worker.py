@@ -19,8 +19,7 @@ log = logging.getLogger(__name__)
 
 def start_worker():
     try:
-        connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host="rabbit"))
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbit"))
         channel = connection.channel()
 
         channel.queue_declare(queue="task_queue", durable=True)
@@ -52,9 +51,7 @@ def start_worker():
     except AMQPConnectionError:
         log.debug("except in worker ")
         seconds = 2
-        log.info(
-            f"Rabbit not yet available, trying again in {seconds} seconds..."
-        )
+        log.info(f"Rabbit not yet available, trying again in {seconds} seconds...")
         time.sleep(2)
         start_worker()
 

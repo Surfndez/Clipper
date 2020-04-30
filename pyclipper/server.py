@@ -81,11 +81,12 @@ def twilio_webhook():
     if request.values["NumMedia"] != "0":
         image_url = request.values["MediaUrl0"]
 
-    log.debug(f'Twilio webhook called'
-              '\n\t(text: {text})\n'
-              '\n\t(RequestType.phone: {RequestType.phone})\n'
-              '\n\t(from_number: {from_number})\n'
-              )
+    log.debug(
+        f"Twilio webhook called"
+        "\n\t(text: {text})\n"
+        "\n\t(RequestType.phone: {RequestType.phone})\n"
+        "\n\t(from_number: {from_number})\n"
+    )
 
     r = ClipperRequest(
         request_type=RequestType.phone,

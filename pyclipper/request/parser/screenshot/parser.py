@@ -55,6 +55,8 @@ def youtube_url(title):
     ]
 
     match_dict = {u[1]: u[0] for u in urls}
+    log.debug(match_dict)
+    log.debug(title)
     (expected_title, score, url) = process.extractOne(title, match_dict)
 
     if score < 95:
