@@ -1,4 +1,5 @@
 import os
+import logging
 
 import ffmpeg
 import youtube_dl
@@ -8,6 +9,8 @@ from pyclipper.clip.metadata import ClipMetadata
 from pyclipper.config import Config
 
 c = Config()
+
+log = logging.getLogger(__name__)
 
 
 def youtube_channel_template(id):
@@ -28,9 +31,9 @@ def download_and_trim(video_url, start, end=None):
     clips_path = c.clips_mount_point
 
     if not os.path.exists(full_video_path):
-        os.mkdir(full_video_path)
+        os.makedirs(full_video_path)
     if not os.path.exists(clips_path):
-        os.mkdir(clips_path)
+        os.makedirs(clips_path)
 
     extension = ".mp4"
 
@@ -48,14 +51,14 @@ def download_and_trim(video_url, start, end=None):
         channel = info.get("channel")
 
         # YouTube relevant
-        print("title:\t\t", title)
-        print("uploader:\t\t", uploader)
-        print("video_url:\t\t", video_url)
-        print("channel url:\t\t", youtube_channel_template(channel_id))
+        log.debug(f"title:\t\t{title}")
+        log.debug(f"uploader:\t\t{uploader}")
+        log.debug(f"video_url:\t\t{video_url}")
+        log.debug(f"channel url:\t\t{youtube_channel_template(channel_id)}")
 
         # YouTube not relevant
-        print("creator:\t\t", creator)
-        print("channel:\t\t", channel)
+        log.debug("creator:\t\t{creator}")
+        log.debug("channel:\t\t{channel}")
 
         video_id = info["id"]
         ext = info["ext"]

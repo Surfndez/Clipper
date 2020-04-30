@@ -1,4 +1,5 @@
 import os
+import logging
 
 from discord.ext import commands
 from pika.exceptions import AMQPConnectionError
@@ -7,6 +8,8 @@ from pyclipper.dispatcher import dispatch_request, dispatch_response
 from pyclipper.request import ClipperRequest
 from pyclipper.request.request_type import RequestType
 from pyclipper.request.response.response import ClipperResponse
+
+log = logging.getLogger(__name__)
 
 description = """An example bot to showcase the discord.ext.commands extension
 module.
@@ -17,10 +20,7 @@ bot = commands.Bot(command_prefix="?", description=description)
 
 @bot.event
 async def on_ready():
-    print("Logged in as")
-    print(bot.user.name)
-    print(bot.user.id)
-    print("------")
+    log.info(f"Logged in as {bot.user.name} (id: {bot.user.id})")
 
 
 @bot.event

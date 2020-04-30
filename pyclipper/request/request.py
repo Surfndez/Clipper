@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import json
+import logging
 
 # TODO add request methodologies and request Ids and then base dispatching off of that request type
 # ✅ phone - phone number
@@ -12,22 +13,24 @@ from typing import Any
 
 from pyclipper.request.request_type import RequestType
 
+log = logging.getLogger(__name__)
+
 
 @dataclass
 class ClipperRequest:
     def __init__(
         self,
-        request_type: RequestType,
-        response_destination: Any,
+        request_type: RequestType = None,
+        response_destination: Any = None,
         image_url: str = None,
         text: str = None,
         request_json=None,
     ):
-        print(request_type)
-        print(response_destination)
-        print(image_url)
-        print(text)
-        print(request_json)
+        params = (request_type, response_destination,
+                  image_url, text, request_json)
+        line_items = '\n'.join((f'\t{i}' for i in params))
+        log.debug(f"Clipper request initialized with:\n{line_items}")
+
         if request_json is not None:
             self.__dict__ = json.loads(request_json)
         elif request_type == None or response_destination == None:

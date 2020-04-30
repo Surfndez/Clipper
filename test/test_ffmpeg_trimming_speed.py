@@ -1,5 +1,8 @@
 import unittest
 import time
+import logging
+
+log = logging.getLogger(__name__)
 
 videos = "pyclipper/assets"
 full_video_path_prefix = f"{videos}/full"
@@ -15,7 +18,7 @@ class TestVideoTrimSpeed(unittest.TestCase):
         end = 284
         toc = time.perf_counter()
         elapsed = toc - tic
-        print(f"Time: {elapsed:0.4f} seconds")
+        log.debug(f"Time: {elapsed:0.4f} seconds")
         self.assertLess(elapsed, 5, "took longer than 5 seconds")
 
 
