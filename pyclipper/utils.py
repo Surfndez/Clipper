@@ -1,4 +1,7 @@
+import os
 import re
+
+from pyclipper.config import Config
 
 
 def find_items_starting_with(string, items):
@@ -38,6 +41,13 @@ def first_url(string):
         return None
     else:
         return urls[0]
+
+
+def build_clip_file_path(video_id, start, end):
+    extension = ".mp4"
+    return os.path.join(
+        Config().clips_mount_point, f"{video_id}-s{start}-e{end}{extension}"
+    )
 
 
 def consecutive(nums):

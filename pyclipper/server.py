@@ -1,5 +1,3 @@
-from pathlib import Path
-import os
 import logging
 
 from flask import Flask
@@ -7,11 +5,12 @@ from flask import request
 from flask import send_file
 from twilio.twiml.messaging_response import MessagingResponse
 
-from pyclipper.clip.metadata import ClipMetadata
 from pyclipper.config import Config
+from pyclipper.db import ClipperDb
 from pyclipper.dispatcher import dispatch_request
 from pyclipper.request import ClipperRequest
 from pyclipper.request.request_type import RequestType
+from pyclipper.utils import build_clip_file_path
 
 c = Config()
 
@@ -20,6 +19,7 @@ app = Flask(__name__, static_folder="assets")
 app.config.from_object(__name__)
 
 log = logging.getLogger(__name__)
+db = ClipperDb()
 
 
 # TODO: templates
@@ -65,14 +65,13 @@ def clip_download():
     start = request.values.get("start", None)
     end = request.values.get("end", None)
 
-    metadata = ClipMetadata().read_from_file_metadata(video_id)
-    clip_path = os.path.join(c.clips_mount_point, f"{video_id}-s{start}-e{end}.mp4")
+    video = db.get_video_info(video_id)
+
+    clip_path = build_clip_file_path(video_id, start, end)
 
     # TODO: open graph protocol https://ogp.me/
     return send_file(
-        clip_path,
-        as_attachment=True,
-        attachment_filename=f"Clip of {metadata.title}.mp4",
+        clip_path, as_attachment=True, attachment_filename=f"Clip of {video[1]}.mp4",
     )
 
 
@@ -89,9 +88,9 @@ def twilio_webhook():
 
     log.debug(
         f"Twilio webhook called"
-        "\n\t(text: {text})\n"
-        "\n\t(RequestType.phone: {RequestType.phone})\n"
-        "\n\t(from_number: {from_number})\n"
+        f"\n\t(text: {text})\n"
+        f"\n\t(RequestType.phone: {RequestType.phone})\n"
+        f"\n\t(from_number: {from_number})\n"
     )
 
     r = ClipperRequest(
