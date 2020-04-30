@@ -10,8 +10,13 @@ services:
     build: .
     ports:
       - 5000:5000
-    depends_on:
-      - rabbit
-    command: python -m pyclipper.main
+    environment:
+      - PYTHONUNBUFFERED=1
+      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/key.json
     volumes:
-      - .:/opt/clipper
+      - ${WHERE_IS_MY_GOOGLE_CLOUD_PLATFORM_KEY_JSON_FILE}:/tmp/keys/key.json
+      - ./:/opt/clipper
+      - clipper-volume:/usr/share/clipper/data
+
+volumes:
+  clipper-volume:

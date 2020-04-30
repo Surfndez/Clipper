@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 
 from flask import Flask
 from flask import request
@@ -16,6 +17,8 @@ c = Config()
 SECRET_KEY = "a secret key"
 app = Flask(__name__, static_folder="assets")
 app.config.from_object(__name__)
+
+log = logging.getLogger(__name__)
 
 
 # TODO: templates
@@ -78,11 +81,11 @@ def twilio_webhook():
     if request.values["NumMedia"] != "0":
         image_url = request.values["MediaUrl0"]
 
-    print('FUCKLOGGING' * 20, flush=True)
-    print(text, flush=True)
-    print(RequestType.phone, flush=True)
-    print(from_number, flush=True)
-    print('FUCKLOGGING' * 20, flush=True)
+    log.debug(f'Twilio webhook called'
+              '\n\t(text: {text})\n'
+              '\n\t(RequestType.phone: {RequestType.phone})\n'
+              '\n\t(from_number: {from_number})\n'
+              )
 
     r = ClipperRequest(
         request_type=RequestType.phone,
@@ -105,5 +108,4 @@ def start_server():
 
 
 if __name__ == "__main__":
-    print("fuck logging again")
     start_server()

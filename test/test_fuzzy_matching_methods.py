@@ -18,8 +18,6 @@ class TestFuzzyMatchingMethods(unittest.TestCase):
         expected_title, score = process.extractOne(
             s_with_noise, choices, scorer=fuzz.partial_token_set_ratio
         )
-        print(expected_title)
-        print(score)
 
 
 if __name__ == "__main__":

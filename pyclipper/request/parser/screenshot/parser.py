@@ -1,6 +1,6 @@
-from pprint import pprint as p
 import os
 import re
+import logging
 
 import requests
 from fuzzywuzzy import process, fuzz
@@ -9,14 +9,20 @@ from google.protobuf.json_format import MessageToJson
 from pyclipper.clip.request import ClipRequest
 from pyclipper.config import Config
 from pyclipper.timestamp import VideoTimestamp
-from pyclipper.utils import find_items_starting_with, consecutive, cheat_youtube_url_lookup
+from pyclipper.utils import (
+    find_items_starting_with,
+    consecutive,
+    cheat_youtube_url_lookup,
+)
+
+log = logging.getLogger(__name__)
 
 
 def check_for_youtube_url(title_lines):
-    print(title_lines)
+    log.debug(title_lines)
     # first, check most obviously for full title
     url = youtube_url(" ".join(title_lines))
-    print(url)
+    log.debug(url)
 
     # if the search did not work for both lines, we could have noise in the title
     # such as hashtags, location, etc. Try searching for just the second line,
@@ -29,7 +35,7 @@ def check_for_youtube_url(title_lines):
 def youtube_url(title):
     """Searches YouTube by title for a video URL. Returns None if no good match is found."""
 
-    print(title)
+    log.debug(title)
     cached = cheat_youtube_url_lookup(title)
     if cached:
         return cached
@@ -126,9 +132,6 @@ def parse_youtube_screenshot_text(text) -> ClipRequest:
         list(VideoTimestamp(ts).seconds for ts in relevant_timestamps_indices.values())
     )
 
-    print(relevant_timestamps_indices)
-    print(relevant_timestamps)
-
     if two_timestamps_attempt:
         start_seconds, end_seconds = relevant_timestamps[0:2]
     elif len(relevant_timestamps) >= 1:
@@ -152,7 +155,10 @@ def create_cache_path(image_uri):
     file_name = (
         f"{base64.b64encode(image_uri.encode()).decode('utf-8')}{file_extension}"
     )
-    return os.path.join(text_path, file_name)
+    file_path = os.path.join(text_path, file_name)
+    if not os.path.exists(text_path):
+        os.makedirs(text_path)
+    return file_path
 
 
 def write_to_cache(text, image_uri):
@@ -175,6 +181,12 @@ def save_image_info(image_uri, info):
     screenshot_path = Config().screenshot_mount_point
     images_path = os.path.join(screenshot_path, "images")
     attributes_path = os.path.join(screenshot_path, "attributes")
+
+    if not os.path.exists(images_path):
+        os.makedirs(images_path)
+    if not os.path.exists(attributes_path):
+        os.makedirs(attributes_path)
+
     count = len(os.listdir(os.path.join(screenshot_path, images_path)))
 
     image_ext = ".png"
@@ -184,9 +196,6 @@ def save_image_info(image_uri, info):
     attributes_ext = ".json"
     attributes_name = f"{count:04d}{attributes_ext}"
     attribute_path = os.path.join(attributes_path, attributes_name)
-
-    print(image_path)
-    print(attribute_path)
 
     with open(image_path, "wb") as f:
         f.write(requests.get(image_uri).content)
@@ -201,7 +210,7 @@ def read_image(image_uri, skip_cache=False):
     if not skip_cache:
         text = check_cache(image_uri)
         if text:
-            print("cache hit")
+            log.debug("cache hit")
             return text
 
     from google.cloud import vision

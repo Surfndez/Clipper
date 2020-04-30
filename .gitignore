@@ -1,6 +1,7 @@
 pyclipper/pyclipper.ini
 server/assets
-
+**.pyc
+__pycache__
 .env/
 env/
 .idea/
