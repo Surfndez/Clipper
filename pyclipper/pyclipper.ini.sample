@@ -1,6 +1,6 @@
 [server]
-base_url =
-flask_port =
+base_url = http://clipper.ngrok.io
+flask_port = 5000
 
 [twilio]
 phone_number =
@@ -19,8 +19,11 @@ SCREENSHOT_MOUNT_POINT = %(MOUNT_POINT)s/screenshots
 VIDEOS_MOUNT_POINT = %(MOUNT_POINT)s/videos
 FULL_VIDEOS_MOUNT_POINT = %(VIDEOS_MOUNT_POINT)s/full
 CLIPS_VIDEOS_MOUNT_POINT = %(VIDEOS_MOUNT_POINT)s/clips
-FULL_VIDEO_NAME_TEMPLATE = "%(FULL_VIDEOS_MOUNT_POINT)s/%%(id)s.%%(ext)s"
+FULL_VIDEO_NAME_TEMPLATE = %(FULL_VIDEOS_MOUNT_POINT)s/%%(id)s.%%(ext)s
 
+[ngrok]
+ngrok_auth =
+ngrok_subdomain =
 
 [clips]
 DEFAULT_CLIP_LENGTH = 30
