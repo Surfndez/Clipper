@@ -21,8 +21,7 @@ def format_response(clip_url):
 
 
 def dispatch_request(request: ClipperRequest):
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host="rabbit"))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbit"))
     channel = connection.channel()
 
     channel.queue_declare(queue="task_queue", durable=True)
