@@ -1,14 +1,16 @@
-import os
 import logging
+import os
 
 import ffmpeg
 import youtube_dl
 from requests.compat import urljoin
 
-from pyclipper.clip.metadata import ClipMetadata
 from pyclipper.config import Config
+from pyclipper.db import ClipperDb
+from pyclipper.utils import build_clip_file_path
 
 c = Config()
+db = ClipperDb()
 
 log = logging.getLogger(__name__)
 
@@ -38,8 +40,6 @@ def download_and_trim(video_url, start, end=None):
     if not os.path.exists(clips_path):
         os.makedirs(clips_path)
 
-    extension = ".mp4"
-
     ydl_opts = {"outtmpl": c.video_name_template, "format": "mp4"}
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
@@ -67,9 +67,8 @@ def download_and_trim(video_url, start, end=None):
         ext = info["ext"]
 
         video = f"{full_video_path}/{video_id}.{ext}"
-        filesystem_clip_name = f"{video_id}-s{start}-e{end}"
         url_clip_name_params = f"video_id={video_id}&start={start}&end={end}"
-        clip_path = os.path.join(clips_path, filesystem_clip_name)
+        clip_path = build_clip_file_path(video_id, start, end)
 
         if not os.path.exists(video):
             ydl.download([video_url])
@@ -87,10 +86,8 @@ def download_and_trim(video_url, start, end=None):
 
         stream.run()
 
-        metadata = ClipMetadata(
-            title, uploader, video_url, youtube_channel_template(channel_id)
+        db.save_video_info(
+            video_id, title, video_url, youtube_channel_template(channel_id)
         )
-
-        metadata.write_to_file_metadata(video_id)
 
     return urljoin(c.base_url, f"clips?{url_clip_name_params}")
