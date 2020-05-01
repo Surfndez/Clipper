@@ -50,8 +50,8 @@ def index():
             <p>Send a text to {twilio_phone_number} with:</p>
             <ol>
                 <li>A Video URL</li>
-                <li>A(n) (optional) start time (defaults to beginning of video)</li>
-                <li>A(n) (optional) end time (defaults to {default_clip_length} seconds after start time)</li>
+                <li>A start time</li>
+                <li>An end time</li>
             </ol>
 
             <p>You can also send us a screenshot of a YouTube video in vertical orientation.</p>
@@ -171,7 +171,7 @@ def twilio_webhook():
 
 
 def start_server():
-    app.run(host="0.0.0.0", port=flask_port, debug=True)
+    app.run(host="0.0.0.0", port=flask_port)
 
 
 if __name__ == "__main__":
