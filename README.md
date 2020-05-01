@@ -1,3 +1,6 @@
+### Try It
+https://clipper.ngrok.io/
+
 ### Setup
 
 #### Docker & Docker Compose
