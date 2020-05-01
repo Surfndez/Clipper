@@ -42,12 +42,12 @@ def index():
 
         <body>
             <p>Clipper</p>
-            <p>Send Us a text with :</p>
-    
+            <a href="sms:{twilio_phone_number}&body={demo_text}">Click here to text us!</a>
+            <p>Send a text to {twilio_phone_number} with:</p>
             <ol>
                 <li>A Video URL</li>
                 <li>A(n) (optional) start time (defaults to beginning of video)</li>
-                <li>A(n) (optional) end time (defaults to {default_clip_length} after start time)</li>
+                <li>A(n) (optional) end time (defaults to {default_clip_length} seconds after start time)</li>
             </ol>
 
             <p>You can also send us a screenshot of a YouTube video in vertical orientation.</p>
@@ -118,7 +118,7 @@ def twilio_webhook():
 
 
 def start_server():
-    app.run(host="0.0.0.0", port=flask_port)
+    app.run(host="0.0.0.0", port=flask_port, debug=True)
 
 
 if __name__ == "__main__":

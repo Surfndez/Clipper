@@ -2,9 +2,7 @@ from pyclipper.clip.request import ClipRequest
 from pyclipper.request import ClipperRequest
 from .screenshot.parser import parse_screenshot
 from .text.parser import parse_text
-from ...config import Config
-
-c = Config()
+from ...config.config import default_clip_length
 
 
 class MissingURLException(Exception):
@@ -43,10 +41,10 @@ def determine_timestamps(image_request, text_request):
         start, end = timestamps[:2]
     elif len(timestamps) == 1:
         start = timestamps[0]
-        end = start + c.default_clip_length
+        end = start + default_clip_length
     else:
         start = 0
-        end = c.default_clip_length
+        end = default_clip_length
     return start, end
 
 

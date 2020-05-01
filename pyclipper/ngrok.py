@@ -8,6 +8,7 @@ from pyclipper.config.config import (
     ngrok_auth,
     ngrok_subdomain,
     twilio_phone_number,
+    flask_port,
 )
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,7 @@ def start_ngrok():
         ngrok_options["subdomain"] = ngrok_subdomain
 
     public_url = ngrok.connect(
-        port=c.flask_port, auth_token=ngrok_auth, options=ngrok_options
+        port=flask_port, auth_token=ngrok_auth, options=ngrok_options
     )
     d(public_url)
     set_base_url(public_url)

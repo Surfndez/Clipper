@@ -13,6 +13,8 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/key.json
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
     volumes:
       - ${WHERE_IS_MY_GOOGLE_CLOUD_PLATFORM_KEY_JSON_FILE}:/tmp/keys/key.json
       - ./:/opt/clipper

@@ -7,7 +7,7 @@ from fuzzywuzzy import process, fuzz
 from google.protobuf.json_format import MessageToJson
 
 from pyclipper.clip.request import ClipRequest
-from pyclipper.config import Config
+from pyclipper.config.config import screenshot_mount_point
 from pyclipper.timestamp import VideoTimestamp
 from pyclipper.utils import (
     find_items_starting_with,
@@ -151,7 +151,7 @@ def parse_youtube_screenshot_text(text) -> ClipRequest:
 def create_cache_path(image_uri):
     import base64
 
-    screenshot_path = Config().screenshot_mount_point
+    screenshot_path = screenshot_mount_point
     text_path = os.path.join(screenshot_path, "text")
     file_extension = ".txt"
     file_name = (
@@ -180,7 +180,7 @@ def check_cache(image_uri):
 
 
 def save_image_info(image_uri, info):
-    screenshot_path = Config().screenshot_mount_point
+    screenshot_path = screenshot_mount_point
     images_path = os.path.join(screenshot_path, "images")
     attributes_path = os.path.join(screenshot_path, "attributes")
 
