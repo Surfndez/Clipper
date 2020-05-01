@@ -5,7 +5,7 @@ import pika
 from pyclipper.request import ClipperRequest
 from pyclipper.request.request_type import RequestType
 from pyclipper.request.response.response import ClipperResponse
-from pyclipper.texting.texting import send_text
+from pyclipper.texting import send_text
 
 log = logging.getLogger(__name__)
 

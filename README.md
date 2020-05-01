@@ -9,6 +9,7 @@
 2) Open the `env` file at the root of the project and make `WHERE_IS_MY_GOOGLE_CLOUD_PLATFORM_KEY_JSON_FILE` match where you downloaded your file.    
 
 #### Twilio
+0) Use the promo code DEVHACK20 for $20 when you create your account.
 1) [Create a new Twilio Account](https://www.twilio.com/try-twilio?promo=Gbv52f) **(DISCLAIMER: this is my referral link)**
 2) Navigate to your [Twilio Console](https://www.twilio.com/console) and copy your `ACCOUNT SID` and `AUTH TOKEN` into the same `.env` file from above.
 3) Buy a Twilio phone number and copy it to your `pyclipper/pyclipper.ini.sample` file.  
