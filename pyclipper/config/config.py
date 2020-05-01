@@ -31,7 +31,7 @@ full_video_mount_point = files["FULL_VIDEOS_MOUNT_POINT"]
 clips_mount_point = files["CLIPS_VIDEOS_MOUNT_POINT"]
 video_name_template = files["FULL_VIDEO_NAME_TEMPLATE"]
 
-default_clip_length = clips["DEFAULT_CLIP_LENGTH"]
+default_clip_length = int(clips["DEFAULT_CLIP_LENGTH"])
 
 ngrok_auth = ngrok["ngrok_auth"]
 ngrok_subdomain = ngrok["ngrok_subdomain"]
