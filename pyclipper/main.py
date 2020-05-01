@@ -1,16 +1,14 @@
-import os
-import logging
 from multiprocessing import Process
 
+from pyclipper.config.config import log_config
 from pyclipper.environment_checker import check_environment_variables
 from pyclipper.ngrok import start_ngrok
 from pyclipper.server import start_server
 from pyclipper.worker import start_worker
 
-log = logging.getLogger(__name__)
-
 
 def main():
+    log_config()
     check_environment_variables()
 
     ngrok_process = Process(target=start_ngrok)

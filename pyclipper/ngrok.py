@@ -16,6 +16,7 @@ d = logger.debug
 
 
 def start_ngrok():
+    ngrok.DEFAULT_NGROK_PATH = "/usr/local/bin/ngrok"
     ngrok_options = dict()
     if ngrok_auth and ngrok_subdomain:
         ngrok_options["subdomain"] = ngrok_subdomain

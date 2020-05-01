@@ -1,5 +1,8 @@
 import os
 import configparser
+import logging
+
+log = logging.getLogger(__name__)
 
 
 config = configparser.ConfigParser()
@@ -41,3 +44,11 @@ default_clip_length = clips["DEFAULT_CLIP_LENGTH"]
 
 ngrok_auth = ngrok["ngrok_auth"]
 ngrok_subdomain = ngrok["ngrok_subdomain"]
+
+
+def log_config():
+    log.info(
+        "\n".join(
+            f"{k: <25} - {v}" for k, v in globals().items() if not k.startswith("__")
+        )
+    )
