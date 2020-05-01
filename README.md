@@ -1,17 +1,17 @@
-### Try It
+# Try It
 https://clipper.ngrok.io/
 
-### Setup
+# Setup
 
-#### Docker & Docker Compose
+## Docker & Docker Compose
 1) [Install Docker](https://docs.docker.com/get-docker/)
 2) [Install Docker Compose](https://docs.docker.com/compose/install/)
 
-#### Google Cloud Vision
+## Google Cloud Vision
 1) Follow instructions [here](https://cloud.google.com/vision/docs/quickstart-client-libraries) to create a Google Cloud Vision Enabled Project and download `key.json`
 2) Open the `env` file at the root of the project and make `WHERE_IS_MY_GOOGLE_CLOUD_PLATFORM_KEY_JSON_FILE` match where you downloaded your file.    
 
-#### Twilio
+## Twilio
 0) Use the promo code DEVHACK20 for $20 when you create your account.
 1) [Create a new Twilio Account](https://www.twilio.com/try-twilio?promo=Gbv52f) **(DISCLAIMER: this is my referral link)**
 2) Navigate to your [Twilio Console](https://www.twilio.com/console) and copy your `ACCOUNT SID` and `AUTH TOKEN` into the same `.env` file from above.
@@ -19,14 +19,14 @@ https://clipper.ngrok.io/
 
 **Finally, change the name of the `pyclipper.ini.sample` to `pyclipper.ini`**
 
-#### Run Application
+## Run Application
 
 * Run `docker-compose up` (AFTER FOLLOWING SETUP INSTRUCTIONS)
     
 
 
 
-# TODO
+## TODO
 * ~~Get google application credentials into environemnt where its needed. I need to figure out docker for this~~
 
 * ~~Automate `ngrok` and `twilio` webhook configuration~~
@@ -47,7 +47,7 @@ https://clipper.ngrok.io/
 
 
 ---
-# ORGANIZE THIS HELPFUL STUFF
+## ORGANIZE THIS HELPFUL STUFF
 #### Install Python Dependencies
 
     virtualenv env && source env/bin/activate && pip install -r pyclipper/requirements.txt
