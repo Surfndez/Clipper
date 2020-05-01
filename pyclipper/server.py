@@ -1,3 +1,4 @@
+import os
 import logging
 
 from flask import Flask
@@ -76,11 +77,37 @@ def clip_download():
     video = db.get_video_info(video_id)
 
     clip_path = build_clip_file_path(video_id, start, end)
+    clip_file = os.path.basename(clip_path)
 
     # TODO: open graph protocol https://ogp.me/
-    return send_file(
-        clip_path, as_attachment=True, attachment_filename=f"Clip of {video[1]}.mp4",
-    )
+    # return send_file(
+    #    clip_path, as_attachment=True, attachment_filename=f"Clip of {video[1]}.mp4",
+    # )
+
+    return f"""
+<!DOCTYPE html>
+<head>
+    <style>
+        body {{
+            font-size: 48px;
+            padding: 16px;
+        }}
+    </style>
+</head>
+<body>
+    <video controls width="250">
+
+    <source src="{clip_file}"
+            type="video/webm">
+
+    <source src="{clip_file}"
+            type="video/mp4">
+
+    Sorry, your browser doesn't support embedded videos.
+</video>
+</body>
+</html>
+"""
 
 
 @app.route("/sms", methods=["GET", "POST"])

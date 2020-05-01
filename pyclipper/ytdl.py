@@ -7,6 +7,7 @@ from requests.compat import urljoin
 
 from pyclipper.config.config import (
     default_clip_length,
+    flask_mount_point,
     full_video_mount_point,
     clips_mount_point,
     video_name_template,
@@ -36,6 +37,7 @@ def download_and_trim(video_url, start, end=None):
 
     full_video_path = full_video_mount_point
     clips_path = clips_mount_point
+    # clips_path = flask_mount_point
 
     log.info("Full video path: " + full_video_path)
     log.info("Clips path: " + clips_path)

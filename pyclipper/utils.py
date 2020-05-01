@@ -1,7 +1,7 @@
 import os
 import re
 
-from pyclipper.config.config import clips_mount_point
+from pyclipper.config.config import clips_mount_point, flask_mount_point
 
 
 def find_items_starting_with(string, items):
@@ -45,7 +45,8 @@ def first_url(string):
 
 def build_clip_file_path(video_id, start, end):
     extension = ".mp4"
-    return os.path.join(clips_mount_point, f"{video_id}-s{start}-e{end}{extension}")
+    return os.path.join(flask_mount_point, f"{video_id}-s{start}-e{end}{extension}")
+    # return os.path.join(clips_mount_point, f"{video_id}-s{start}-e{end}{extension}")
 
 
 def consecutive(nums):

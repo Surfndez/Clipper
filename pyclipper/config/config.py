@@ -26,6 +26,7 @@ demo_text = twilio["demo_text"]
 
 bot_token = discord["bot_token"]
 
+flask_mount_point = files["FLASK_MOUNT_POINT"]
 screenshot_mount_point = files["SCREENSHOT_MOUNT_POINT"]
 full_video_mount_point = files["FULL_VIDEOS_MOUNT_POINT"]
 clips_mount_point = files["CLIPS_VIDEOS_MOUNT_POINT"]
