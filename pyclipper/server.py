@@ -1,22 +1,21 @@
-import os
-import logging
-
-from flask import Flask
-from flask import request
-from flask import send_file
-from twilio.twiml.messaging_response import MessagingResponse
-
+from pyclipper.utils import build_clip_file_path
+from pyclipper.request.request_type import RequestType
+from pyclipper.request import ClipperRequest
+from pyclipper.dispatcher import dispatch_request
+from pyclipper.db import ClipperDb
 from pyclipper.config.config import (
     default_clip_length,
     demo_text,
     twilio_phone_number,
     flask_port,
 )
-from pyclipper.db import ClipperDb
-from pyclipper.dispatcher import dispatch_request
-from pyclipper.request import ClipperRequest
-from pyclipper.request.request_type import RequestType
-from pyclipper.utils import build_clip_file_path
+from twilio.twiml.messaging_response import MessagingResponse
+from flask import send_file
+from flask import request
+from flask import Flask
+import logging
+import os
+
 
 SECRET_KEY = "a secret key"
 app = Flask(__name__, static_folder="assets")
