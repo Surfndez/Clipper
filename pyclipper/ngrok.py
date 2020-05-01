@@ -1,4 +1,5 @@
 import logging
+import os
 
 from pyngrok import ngrok
 import subprocess
@@ -34,6 +35,7 @@ def start_ngrok():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True,
+        env=os.environ,
     )
     stdout, stderr = process.communicate()
     d(stdout)

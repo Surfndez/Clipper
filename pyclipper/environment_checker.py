@@ -44,5 +44,6 @@ https://www.twilio.com/try-twilio?promo=Gbv52f
 
 
 def check_environment_variables():
+    d(os.environ)
     check_google_cloud_vision_environment_variables()
     check_twilio_environment_variables()

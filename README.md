@@ -2,7 +2,7 @@
 
 #### Docker & Docker Compose
 1) [Install Docker](https://docs.docker.com/get-docker/)
-2) [Install Docker Compose](https://docs.docker.com/compose/install/) (if you need don't have it)
+2) [Install Docker Compose](https://docs.docker.com/compose/install/)
 
 #### Google Cloud Vision
 1) Follow instructions [here](https://cloud.google.com/vision/docs/quickstart-client-libraries) to create a Google Cloud Vision Enabled Project and download `key.json`
@@ -19,12 +19,6 @@
 
 * Run `docker-compose up` (AFTER FOLLOWING SETUP INSTRUCTIONS)
     
-#### External Dependencies
-
-* `docker` - easily deploy and run applications
-* `nodemon` -  automatically restarting program when you make changes - https://nodemon.io/
-
-
 
 
 
@@ -33,9 +27,18 @@
 
 * ~~Automate `ngrok` and `twilio` webhook configuration~~
 
-* Install twilio cli into Docker Image
+* ~~Install twilio cli into Docker Image~~
 
 * Complete README
+
+* Avoid Key Errors by crashing with warnings first
+
+* Remove env from git history and make .env.sample in Git
+
+* Fix Twilio not finding credentials
+
+* Silence Rabbit output 
+
 
 
 
@@ -65,8 +68,15 @@
 
 
 ## Organize Later
-* Get a Twilio Number and add ngrok URL/sms to Twilio Number
-LOOK HERE AND AUTOMATE THIS https://www.twilio.com/docs/twilio-cli/general-usage#webhooks
+
+#### External Dependencies
+
+* `docker` - easily deploy and run applications
+* `nodemon` -  automatically restarting program when you make changes - https://nodemon.io/
+
+
+
+
 
 * Install Dependencies 
     
