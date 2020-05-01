@@ -7,3 +7,4 @@ env/
 .DS_Store
 pyclipper.log
 .public_url_cache_file.txt
+!.env.sample/
