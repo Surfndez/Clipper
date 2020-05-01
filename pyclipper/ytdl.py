@@ -37,7 +37,6 @@ def download_and_trim(video_url, start, end=None):
 
     full_video_path = full_video_mount_point
     clips_path = clips_mount_point
-    # clips_path = flask_mount_point
 
     log.info("Full video path: " + full_video_path)
     log.info("Clips path: " + clips_path)
@@ -79,6 +78,9 @@ def download_and_trim(video_url, start, end=None):
 
         if not os.path.exists(video):
             ydl.download([video_url])
+
+    if not os.path.exists(flask_mount_point):
+        os.makedirs(flask_mount_point)
 
     if not os.path.exists(clip_path):
         "ffmpeg " "-i iXwfBJYCTc4.mp4 " "-ss 4 " "-to 2:44 " "-c:v copy " "-c:a copy" " clip.mp4"

@@ -13,6 +13,7 @@ demo_text = %(demo_url)s %(demo_start)s %(demo_end)s
 bot_token =
 
 [files]
+FLASK_MOUNT_POINT = /opt/clipper/pyclipper/static
 MOUNT_POINT = /usr/share/clipper/data
 SCREENSHOT_MOUNT_POINT = %(MOUNT_POINT)s/screenshots
 VIDEOS_MOUNT_POINT = %(MOUNT_POINT)s/videos

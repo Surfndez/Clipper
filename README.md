@@ -34,9 +34,9 @@
 
 * Avoid Key Errors by crashing with warnings first
 
-* Remove env from git history and make .env.sample in Git
+* ~~Remove env from git history and make .env.sample in Git~~
 
-* Fix Twilio not finding credentials
+* ~~Fix Twilio not finding credentials~~
 
 * Silence Rabbit output 
 

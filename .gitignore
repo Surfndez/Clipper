@@ -8,3 +8,5 @@ env/
 pyclipper.log
 .public_url_cache_file.txt
 !.env.sample/
+clipper.db
+pyclipper/static

@@ -1,24 +1,28 @@
-from pyclipper.utils import build_clip_file_path
-from pyclipper.request.request_type import RequestType
-from pyclipper.request import ClipperRequest
-from pyclipper.dispatcher import dispatch_request
-from pyclipper.db import ClipperDb
+import os
+import logging
+import urllib
+
+from flask import Flask
+from flask import request
+from flask import send_file
+from flask import send_from_directory
+from twilio.twiml.messaging_response import MessagingResponse
+
 from pyclipper.config.config import (
     default_clip_length,
     demo_text,
     twilio_phone_number,
     flask_port,
 )
-from twilio.twiml.messaging_response import MessagingResponse
-from flask import send_file
-from flask import request
-from flask import Flask
-import logging
-import os
+from pyclipper.db import ClipperDb
+from pyclipper.dispatcher import dispatch_request
+from pyclipper.request import ClipperRequest
+from pyclipper.request.request_type import RequestType
+from pyclipper.utils import build_clip_file_path
 
 
 SECRET_KEY = "a secret key"
-app = Flask(__name__, static_folder="assets")
+app = Flask(__name__, static_folder="static")
 app.config.from_object(__name__)
 
 log = logging.getLogger(__name__)
@@ -66,22 +70,23 @@ def index():
     """
 
 
+@app.route("/static/<path:filename>")
+def serve_static(filename):
+    root_dir = os.path.dirname(os.getcwd())
+    return send_from_directory(os.path.join(root_dir, "static"), filename)
+
+
 @app.route("/clips")
-def clip_download():
+def clip_view():
 
     video_id = request.values.get("video_id", None)
     start = request.values.get("start", None)
     end = request.values.get("end", None)
 
-    video = db.get_video_info(video_id)
+    forward_params = f"video_id={video_id}&start={start}&end={end}"
 
     clip_path = build_clip_file_path(video_id, start, end)
     clip_file = os.path.basename(clip_path)
-
-    # TODO: open graph protocol https://ogp.me/
-    # return send_file(
-    #    clip_path, as_attachment=True, attachment_filename=f"Clip of {video[1]}.mp4",
-    # )
 
     return f"""
 <!DOCTYPE html>
@@ -94,19 +99,41 @@ def clip_download():
     </style>
 </head>
 <body>
-    <video controls width="250">
+    <video controls width="100%">
 
-    <source src="{clip_file}"
+    <source src="static/{clip_file}"
             type="video/webm">
 
-    <source src="{clip_file}"
+    <source src="static/{clip_file}"
             type="video/mp4">
 
     Sorry, your browser doesn't support embedded videos.
-</video>
+    </video>
+    <div>
+    <a href="downloads?clip_path=static/{clip_file}&{forward_params}">Download</a>
+    </div>
 </body>
 </html>
 """
+
+
+@app.route("/downloads")
+def clip_download():
+
+    clip_path = request.values.get("clip_path")
+    video_id = request.values.get("video_id", None)
+    start = request.values.get("start", None)
+    end = request.values.get("end", None)
+
+    video = db.get_video_info(video_id)
+
+    clip_path = build_clip_file_path(video_id, start, end)
+    clip_file = os.path.basename(clip_path)
+
+    # TODO: open graph protocol https://ogp.me/
+    return send_file(
+        clip_path, as_attachment=True, attachment_filename=f"Clip of {video[1]}.mp4",
+    )
 
 
 @app.route("/sms", methods=["GET", "POST"])
