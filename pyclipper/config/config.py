@@ -15,16 +15,7 @@ files = config["files"]
 clips = config["clips"]
 ngrok = config["ngrok"]
 
-base_url = server["base_url"]
-
-
-def set_base_url(url):
-    global base_url
-    base_url = url
-
-
 flask_port = server.getint("flask_port")
-
 
 twilio_account_sid = os.environ["TWILIO_ACCOUNT_SID"]
 twilio_auth_token = os.environ["TWILIO_AUTH_TOKEN"]
@@ -52,3 +43,15 @@ def log_config():
             f"{k: <25} - {v}" for k, v in globals().items() if not k.startswith("__")
         )
     )
+
+
+public_url_cache_file = ".public_url_cache_file.txt"
+
+
+def cache_public_url(url):
+    with open(public_url_cache_file, "w") as url_fd:
+        url_fd.write(url)
+
+
+def read_public_url():
+    return open(public_url_cache_file, "r").read()

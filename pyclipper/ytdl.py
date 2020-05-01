@@ -6,11 +6,11 @@ import youtube_dl
 from requests.compat import urljoin
 
 from pyclipper.config.config import (
-    base_url,
     default_clip_length,
     full_video_mount_point,
     clips_mount_point,
     video_name_template,
+    read_public_url,
 )
 from pyclipper.db import ClipperDb
 from pyclipper.utils import build_clip_file_path
@@ -95,4 +95,4 @@ def download_and_trim(video_url, start, end=None):
             video_id, title, video_url, youtube_channel_template(channel_id)
         )
 
-    return urljoin(base_url, f"clips?{url_clip_name_params}")
+    return urljoin(read_public_url(), f"clips?{url_clip_name_params}")

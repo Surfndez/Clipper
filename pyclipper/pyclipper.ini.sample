@@ -1,5 +1,4 @@
 [server]
-base_url = http://clipper.ngrok.io
 flask_port = 5000
 
 [twilio]

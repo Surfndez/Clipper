@@ -5,11 +5,11 @@ from pyngrok import ngrok
 import subprocess
 
 from pyclipper.config.config import (
-    set_base_url,
     ngrok_auth,
     ngrok_subdomain,
     twilio_phone_number,
     flask_port,
+    cache_public_url,
 )
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def start_ngrok():
         port=flask_port, auth_token=ngrok_auth, options=ngrok_options
     )
     d(public_url)
-    set_base_url(public_url)
+    cache_public_url(public_url)
     twilio_phone_webhook_cmd = (
         f"twilio phone-numbers:update {twilio_phone_number} --sms-url {public_url}/sms"
     )
